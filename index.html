@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArteScena — Plataforma de Artistas</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0c0a;
+    --surface: #181410;
+    --card: #1f1b17;
+    --border: #2e2820;
+    --gold: #c9a84c;
+    --gold-light: #e8cc80;
+    --text: #f0ead8;
+    --muted: #8a7e6a;
+    --accent: #d45f3c;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: rgba(14,12,10,0.92);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+  .logo span { color: var(--accent); }
+
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: .9rem;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .btn {
+    padding: .6rem 1.4rem; border-radius: 6px; font-family: 'DM Sans', sans-serif;
+    font-size: .9rem; cursor: pointer; border: none; transition: all .2s;
+  }
+  .btn-outline {
+    background: transparent; color: var(--gold);
+    border: 1px solid var(--gold);
+  }
+  .btn-outline:hover { background: var(--gold); color: var(--bg); }
+  .btn-primary {
+    background: var(--gold); color: var(--bg); font-weight: 600;
+  }
+  .btn-primary:hover { background: var(--gold-light); }
+  .btn-accent {
+    background: var(--accent); color: #fff; font-weight: 600;
+  }
+
+  /* PAGES */
+  .page { display: none; padding-top: 70px; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ── HOME ── */
+  .hero {
+    min-height: 90vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 3rem 2rem;
+    background: radial-gradient(ellipse at 50% 30%, #2a1f0e 0%, var(--bg) 70%);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block; padding: .3rem 1rem; border: 1px solid var(--gold);
+    border-radius: 999px; font-size: .8rem; color: var(--gold);
+    margin-bottom: 1.5rem; letter-spacing: 2px; text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    line-height: 1.1; font-weight: 900;
+    max-width: 900px;
+  }
+  .hero h1 em { color: var(--gold); font-style: italic; }
+  .hero p {
+    max-width: 560px; color: var(--muted); line-height: 1.7;
+    font-size: 1.05rem; margin: 1.5rem auto 2.5rem;
+  }
+  .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+  .stats {
+    display: flex; justify-content: center; gap: 3rem; padding: 3rem 2rem;
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem; font-weight: 700; color: var(--gold);
+  }
+  .stat-label { font-size: .85rem; color: var(--muted); margin-top: .2rem; }
+
+  /* Categories */
+  .section { padding: 4rem 2.5rem; max-width: 1200px; margin: 0 auto; }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; margin-bottom: .5rem;
+  }
+  .section-sub { color: var(--muted); margin-bottom: 2rem; }
+
+  .categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+  .cat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.5rem 1rem;
+    text-align: center; cursor: pointer; transition: all .25s;
+  }
+  .cat-card:hover {
+    border-color: var(--gold); transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(201,168,76,.15);
+  }
+  .cat-icon { font-size: 2rem; margin-bottom: .6rem; display: block; }
+  .cat-name { font-size: .85rem; font-weight: 500; }
+
+  /* Artists grid */
+  .artists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .artist-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    transition: all .25s; cursor: pointer;
+  }
+  .artist-card:hover {
+    border-color: var(--gold); transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,.4);
+  }
+  .artist-banner {
+    height: 120px; display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem;
+  }
+  .artist-body { padding: 1.2rem; }
+  .artist-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem; font-weight: 700; margin-bottom: .2rem;
+  }
+  .artist-type {
+    font-size: .8rem; color: var(--gold); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: .6rem;
+  }
+  .artist-desc { font-size: .85rem; color: var(--muted); line-height: 1.5; }
+  .artist-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);
+  }
+  .rating { color: var(--gold); font-size: .85rem; }
+  .price-tag { font-size: .85rem; color: var(--text); font-weight: 500; }
+
+  /* ── ARTIST PROFILE ── */
+  .profile-hero {
+    background: linear-gradient(135deg, #2a1f0e, #1a1208);
+    padding: 3rem 2.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .profile-top {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;
+  }
+  .profile-avatar {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: var(--card); border: 3px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem; flex-shrink: 0;
+  }
+  .profile-info { flex: 1; min-width: 200px; }
+  .profile-info h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 900; margin-bottom: .3rem;
+  }
+  .profile-badge {
+    display: inline-block; padding: .25rem .9rem;
+    background: rgba(201,168,76,.15); border: 1px solid var(--gold);
+    border-radius: 999px; font-size: .8rem; color: var(--gold);
+    margin-bottom: .8rem;
+  }
+  .profile-meta { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .profile-meta span { font-size: .9rem; color: var(--muted); }
+  .profile-meta span strong { color: var(--text); }
+
+  .profile-actions { display: flex; gap: .8rem; align-items: center; margin-top: 1rem; }
+
+  .profile-content {
+    max-width: 1100px; margin: 2rem auto;
+    padding: 0 2.5rem;
+    display: grid; grid-template-columns: 1fr 320px; gap: 2rem;
+  }
+  @media(max-width: 768px) {
+    .profile-content { grid-template-columns: 1fr; }
+  }
+
+  .profile-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; margin-bottom: 1rem;
+    padding-bottom: .5rem; border-bottom: 1px solid var(--border);
+  }
+
+  .services-list { display: flex; flex-direction: column; gap: .8rem; margin-bottom: 2rem; }
+  .service-item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1rem 1.2rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .service-name { font-weight: 500; }
+  .service-price { color: var(--gold); font-weight: 600; }
+
+  .conditions-list { list-style: none; color: var(--muted); font-size: .9rem; line-height: 2; }
+  .conditions-list li::before { content: '◆ '; color: var(--gold); font-size: .6rem; }
+
+  .sidebar-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;
+  }
+  .sidebar-card h4 {
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 1rem; font-size: 1rem;
+  }
+
+  .calendar-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+    margin-bottom: 1rem;
+  }
+  .cal-day {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; border-radius: 4px; cursor: pointer;
+    transition: all .15s;
+  }
+  .cal-day.header { color: var(--muted); font-size: .7rem; cursor: default; }
+  .cal-day.available { background: rgba(201,168,76,.15); color: var(--gold-light); }
+  .cal-day.available:hover { background: rgba(201,168,76,.35); }
+  .cal-day.booked { background: rgba(212,95,60,.15); color: var(--accent); }
+  .cal-day.empty { pointer-events: none; }
+  .cal-day.today { border: 1px solid var(--gold); font-weight: 700; }
+
+  .legend { display: flex; gap: 1rem; font-size: .75rem; color: var(--muted); flex-wrap: wrap; }
+  .legend span { display: flex; align-items: center; gap: .4rem; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-avail { background: var(--gold); }
+  .dot-booked { background: var(--accent); }
+
+  /* ── CONTRATAR (form) ── */
+  .form-page { max-width: 700px; margin: 0 auto; padding: 2rem 2rem; }
+  .form-page h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; margin-bottom: .5rem;
+  }
+  .form-page p { color: var(--muted); margin-bottom: 2rem; }
+
+  .step-bar {
+    display: flex; gap: 0; margin-bottom: 2.5rem;
+  }
+  .step {
+    flex: 1; text-align: center; padding: .6rem; font-size: .8rem;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--muted); position: relative;
+  }
+  .step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+  .step:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+  .step.active { background: rgba(201,168,76,.15); color: var(--gold); border-color: var(--gold); }
+  .step.done { background: rgba(201,168,76,.08); color: var(--muted); }
+
+  .form-group { margin-bottom: 1.4rem; }
+  .form-group label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: .5rem; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%; padding: .8rem 1rem;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: .9rem;
+    transition: border-color .2s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none; border-color: var(--gold);
+  }
+  .form-group textarea { resize: vertical; min-height: 100px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .form-nav { display: flex; justify-content: space-between; margin-top: 2rem; }
+
+  /* Success */
+  .success-box {
+    text-align: center; padding: 4rem 2rem;
+  }
+  .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+  .success-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem; margin-bottom: .8rem;
+  }
+  .success-box p { color: var(--muted); max-width: 400px; margin: 0 auto 2rem; }
+
+  /* ── DASHBOARD ── */
+  .dash-layout {
+    display: grid; grid-template-columns: 220px 1fr;
+    min-height: calc(100vh - 70px);
+  }
+  .dash-sidebar {
+    background: var(--surface); border-right: 1px solid var(--border);
+    padding: 2rem 1rem;
+  }
+  .dash-nav-item {
+    display: flex; align-items: center; gap: .8rem;
+    padding: .75rem 1rem; border-radius: 8px; cursor: pointer;
+    font-size: .9rem; color: var(--muted); transition: all .2s; margin-bottom: .2rem;
+  }
+  .dash-nav-item:hover, .dash-nav-item.active {
+    background: rgba(201,168,76,.1); color: var(--gold);
+  }
+  .dash-content { padding: 2rem; }
+
+  .dash-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; margin-bottom: 2rem;
+  }
+
+  .kpis {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+  }
+  .kpi-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.2rem;
+  }
+  .kpi-label { font-size: .8rem; color: var(--muted); margin-bottom: .3rem; }
+  .kpi-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 700; color: var(--gold);
+  }
+  .kpi-change { font-size: .8rem; color: #5cb85c; margin-top: .2rem; }
+
+  .requests-table { width: 100%; border-collapse: collapse; }
+  .requests-table th {
+    text-align: left; font-size: .8rem; color: var(--muted);
+    padding: .7rem 1rem; border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .requests-table td {
+    padding: .9rem 1rem; border-bottom: 1px solid var(--border);
+    font-size: .88rem;
+  }
+  .status-badge {
+    display: inline-block; padding: .2rem .7rem; border-radius: 999px;
+    font-size: .75rem; font-weight: 500;
+  }
+  .status-pending { background: rgba(201,168,76,.15); color: var(--gold); }
+  .status-confirmed { background: rgba(92,184,92,.15); color: #5cb85c; }
+  .status-done { background: rgba(138,126,106,.15); color: var(--muted); }
+
+  /* Misc */
+  .divider { height: 1px; background: var(--border); margin: 2rem 0; }
+  .text-gold { color: var(--gold); }
+  .text-muted { color: var(--muted); }
+  .mt1 { margin-top: .5rem; }
+  .mt2 { margin-top: 1rem; }
+  .flex { display: flex; }
+  .gap1 { gap: .5rem; }
+
+  /* Search bar */
+  .search-bar {
+    display: flex; gap: .8rem; max-width: 700px; margin: 0 auto 3rem;
+    padding: 0 1rem;
+  }
+  .search-bar input {
+    flex: 1; padding: .9rem 1.2rem;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: .95rem;
+  }
+  .search-bar input:focus { outline: none; border-color: var(--gold); }
+
+  /* Registration */
+  .reg-tabs { display: flex; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
+  .reg-tab {
+    padding: .8rem 2rem; cursor: pointer; font-size: .9rem;
+    color: var(--muted); border-bottom: 2px solid transparent;
+    transition: all .2s;
+  }
+  .reg-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .tag-list { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .tag {
+    padding: .3rem .9rem; border: 1px solid var(--border);
+    border-radius: 999px; font-size: .8rem; cursor: pointer; color: var(--muted);
+    transition: all .2s;
+  }
+  .tag:hover, .tag.selected {
+    border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,.1);
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Arte<span>Scena</span></div>
+  <div class="nav-links">
+    <a href="#" onclick="showPage('home')">Inicio</a>
+    <a href="#" onclick="showPage('explore')">Explorar</a>
+    <a href="#" onclick="showPage('dashboard')">Mi Panel</a>
+    <button class="btn btn-outline" onclick="showPage('register')">Soy Artista</button>
+    <button class="btn btn-primary" onclick="showPage('explore')">Contratar</button>
+  </div>
+</nav>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-tag">🎭 Plataforma Artística Nacional</div>
+    <h1>Tu talento merece<br><em>un gran escenario</em></h1>
+    <p>Conectamos artistas de todo el país con clientes que buscan experiencias únicas. Música, danza, humor, teatro, artes plásticas y mucho más.</p>
+    <div class="hero-btns">
+      <button class="btn btn-primary" onclick="showPage('explore')">Explorar Artistas</button>
+      <button class="btn btn-outline" onclick="showPage('register')">Registrar mi Talento</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num">1,240+</div><div class="stat-label">Artistas registrados</div></div>
+    <div class="stat"><div class="stat-num">38</div><div class="stat-label">Categorías artísticas</div></div>
+    <div class="stat"><div class="stat-num">3,800+</div><div class="stat-label">Eventos realizados</div></div>
+    <div class="stat"><div class="stat-num">7 provincias</div><div class="stat-label">Cobertura nacional</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Explora por Categoría</div>
+    <div class="section-sub">Encuentra el talento perfecto para tu evento</div>
+    <div class="categories">
+      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🎵</span><div class="cat-name">Grupos Musicales</div></div>
+      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">💃</span><div class="cat-name">Grupos de Baile</div></div>
+      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🎭</span><div class="cat-name">Teatro / Sketch</div></div>
+      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🎤</span><div class="cat-name">Stand-Up Comedy</div></div>
+      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🃏</span><div class="cat-name">Magia</div></div>
+      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🤹</span><div class="cat-name">Malabaristas</div></div>
+      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🖌️</span><div class="cat-name">Pintores</div></div>
+      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🗿</span><div class="cat-name">Escultores</div></div>
+      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">😂</span><div class="cat-name">Humoristas</div></div>
+      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🥁</span><div class="cat-name">Percusión</div></div>
+      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🎪</span><div class="cat-name">Circo</div></div>
+      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">✨</span><div class="cat-name">Más...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ EXPLORAR ═══════════════ -->
+<div class="page" id="page-explore">
+  <div class="section" style="padding-top:2rem">
+    <div class="section-title">Explorar Artistas</div>
+    <div class="section-sub">Descubre talentos disponibles en todo el país</div>
+    <div class="search-bar" style="max-width:100%;padding:0;margin-bottom:1.5rem">
+      <input type="text" placeholder="Buscar por nombre, categoría, ciudad...">
+      <select style="padding:.9rem 1rem;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;">
+        <option>Todas las categorías</option>
+        <option>Música</option>
+        <option>Danza</option>
+        <option>Teatro</option>
+        <option>Humor</option>
+        <option>Artes Plásticas</option>
+      </select>
+      <button class="btn btn-primary">Buscar</button>
+    </div>
+
+    <div class="artists-grid">
+      <div class="artist-card" onclick="showPage('profile')">
+        <div class="artist-banner" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">🎸</div>
+        <div class="artist-body">
+          <div class="artist-type">Grupo Musical • Rock</div>
+          <div class="artist-name">Los Señores del Viento</div>
+          <div class="artist-desc">Banda de rock fusión con más de 10 años de experiencia. Repertorio amplio, sonido profesional.</div>
+          <div class="artist-footer">
+            <span class="rating">★★★★★ <span style="color:var(--muted)">(48)</span></span>
+            <span class="price-tag">Desde ₡150,000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="artist-card" onclick="showPage('profile')">
+        <div class="artist-banner" style="background:linear-gradient(135deg,#1a0a2e,#2d1458)">💃</div>
+        <div class="artist-body">
+          <div class="artist-type">Danza • Folclore</div>
+          <div class="artist-name">Compañía Raíces CR</div>
+          <div class="artist-desc">Danza folclórica costarricense auténtica. Ideal para eventos corporativos, festivales y bodas.</div>
+          <div class="artist-footer">
+            <span class="rating">★★★★★ <span style="color:var(--muted)">(72)</span></span>
+            <span class="price-tag">Desde ₡80,000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="artist-card" onclick="showPage('profile')">
+        <div class="artist-banner" style="background:linear-gradient(135deg,#1a2e0a,#0f3d0a)">🎤</div>
+        <div class="artist-body">
+          <div class="artist-type">Stand-Up Comedy</div>
+          <div class="artist-name">Carlos "El Coyol" Mora</div>
+          <div class="artist-desc">Comediante con material original sobre cotidianidad tica. Shows de 30 a 90 minutos.</div>
+          <div class="artist-footer">
+            <span class="rating">★★★★☆ <span style="color:var(--muted)">(31)</span></span>
+            <span class="price-tag">Desde ₡60,000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="artist-card" onclick="showPage('profile')">
+        <div class="artist-banner" style="background:linear-gradient(135deg,#2e1a0a,#4a2800)">🤹</div>
+        <div class="artist-body">
+          <div class="artist-type">Malabarismo • Circo</div>
+          <div class="artist-name">Acrobats del Sol</div>
+          <div class="artist-desc">Espectáculo circense completo: malabaristas, acróbatas y payasos. Apto para todo público.</div>
+          <div class="artist-footer">
+            <span class="rating">★★★★★ <span style="color:var(--muted)">(55)</span></span>
+            <span class="price-tag">Desde ₡120,000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="artist-card" onclick="showPage('profile')">
+        <div class="artist-banner" style="background:linear-gradient(135deg,#2e0a1a,#4a0030)">🖌️</div>
+        <div class="artist-body">
+          <div class="artist-type">Artes Plásticas • Pintura en Vivo</div>
+          <div class="artist-name">Valeria Montoya Arte</div>
+          <div class="artist-desc">Pintura en vivo durante eventos. Retratos, paisajes y obra abstracta. Técnica mixta.</div>
+          <div class="artist-footer">
+            <span class="rating">★★★★☆ <span style="color:var(--muted)">(18)</span></span>
+            <span class="price-tag">Desde ₡45,000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="artist-card" onclick="showPage('profile')">
+        <div class="artist-banner" style="background:linear-gradient(135deg,#0a2e2e,#00404a)">🎭</div>
+        <div class="artist-body">
+          <div class="artist-type">Teatro • Sketch Cómico</div>
+          <div class="artist-name">Troupe Imaginaria</div>
+          <div class="artist-desc">Grupo de teatro de improvisación y sketches cómicos. Presentaciones interactivas y personalizadas.</div>
+          <div class="artist-footer">
+            <span class="rating">★★★★★ <span style="color:var(--muted)">(40)</span></span>
+            <span class="price-tag">Desde ₡95,000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PERFIL ARTISTA ═══════════════ -->
+<div class="page" id="page-profile">
+  <div class="profile-hero">
+    <div class="profile-top">
+      <div class="profile-avatar">🎸</div>
+      <div class="profile-info">
+        <h2>Los Señores del Viento</h2>
+        <div class="profile-badge">Grupo Musical • Rock Fusión</div>
+        <div class="profile-meta">
+          <span>📍 <strong>San José, CR</strong></span>
+          <span>★ <strong>4.9</strong> (48 reseñas)</span>
+          <span>🎵 <strong>5 integrantes</strong></span>
+          <span>✅ <strong>Verificado</strong></span>
+        </div>
+        <div class="profile-actions" style="margin-top:1rem">
+          <button class="btn btn-primary" onclick="showPage('contratar')">Contratar Ahora</button>
+          <button class="btn btn-outline">Ver Demos</button>
+          <button class="btn btn-outline">💬 Mensaje</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-content">
+    <div>
+      <div class="profile-section-title">Sobre nosotros</div>
+      <p style="color:var(--muted);line-height:1.7;font-size:.93rem;margin-bottom:1.5rem">
+        Somos una banda de rock fusión costarricense con más de 10 años de experiencia en escenarios nacionales e internacionales. Nuestra propuesta musical mezcla el rock clásico con ritmos latinoamericanos, cumbia y reggae, creando un sonido único y versátil.
+      </p>
+
+      <div class="profile-section-title">Servicios que ofrecemos</div>
+      <div class="services-list">
+        <div class="service-item">
+          <div>
+            <div class="service-name">Show completo (90 min)</div>
+            <div style="font-size:.8rem;color:var(--muted)">3 sets de 30 min, pausa incluida</div>
+          </div>
+          <div class="service-price">₡250,000</div>
+        </div>
+        <div class="service-item">
+          <div>
+            <div class="service-name">Show corto (45 min)</div>
+            <div style="font-size:.8rem;color:var(--muted)">Ideal para cocktails y recepciones</div>
+          </div>
+          <div class="service-price">₡150,000</div>
+        </div>
+        <div class="service-item">
+          <div>
+            <div class="service-name">Música ambiental (acústico)</div>
+            <div style="font-size:.8rem;color:var(--muted)">2 integrantes, formato íntimo</div>
+          </div>
+          <div class="service-price">₡80,000</div>
+        </div>
+      </div>
+
+      <div class="profile-section-title">Condiciones y rider técnico</div>
+      <ul class="conditions-list">
+        <li>Escenario mínimo de 4m × 3m</li>
+        <li>Sistema de sonido profesional (PA) con mínimo 1,500W</li>
+        <li>Toma eléctrica de 220V disponible</li>
+        <li>Camerino privado para los 5 integrantes</li>
+        <li>Alimentación para el equipo (shows mayores a 3h)</li>
+        <li>Transporte desde San José incluido hasta 30km</li>
+        <li>50% de adelanto para confirmar la fecha</li>
+        <li>Cancelación con 48h de anticipación sin cargo</li>
+      </ul>
+
+      <div class="divider"></div>
+
+      <div class="profile-section-title">Géneros del repertorio</div>
+      <div class="tag-list" style="margin-bottom:2rem">
+        <span class="tag selected">Rock clásico</span>
+        <span class="tag selected">Rock fusión</span>
+        <span class="tag selected">Cumbia</span>
+        <span class="tag selected">Reggae</span>
+        <span class="tag">Pop en español</span>
+        <span class="tag">Baladas</span>
+        <span class="tag">Latin rock</span>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <div class="sidebar-card">
+        <h4>📅 Disponibilidad — Junio 2025</h4>
+        <div class="calendar-grid">
+          <div class="cal-day header">D</div>
+          <div class="cal-day header">L</div>
+          <div class="cal-day header">M</div>
+          <div class="cal-day header">X</div>
+          <div class="cal-day header">J</div>
+          <div class="cal-day header">V</div>
+          <div class="cal-day header">S</div>
+          <div class="cal-day empty"></div>
+          <div class="cal-day available">2</div>
+          <div class="cal-day available">3</div>
+          <div class="cal-day available">4</div>
+          <div class="cal-day available">5</div>
+          <div class="cal-day booked">6</div>
+          <div class="cal-day booked">7</div>
+          <div class="cal-day available">9</div>
+          <div class="cal-day available">10</div>
+          <div class="cal-day available">11</div>
+          <div class="cal-day booked">12</div>
+          <div class="cal-day available">13</div>
+          <div class="cal-day booked">14</div>
+          <div class="cal-day available">16</div>
+          <div class="cal-day available">17</div>
+          <div class="cal-day available today">18</div>
+          <div class="cal-day available">19</div>
+          <div class="cal-day booked">20</div>
+          <div class="cal-day booked">21</div>
+          <div class="cal-day available">23</div>
+          <div class="cal-day available">24</div>
+          <div class="cal-day available">25</div>
+          <div class="cal-day available">26</div>
+          <div class="cal-day booked">27</div>
+          <div class="cal-day booked">28</div>
+          <div class="cal-day available">30</div>
+        </div>
+        <div class="legend">
+          <span><div class="dot dot-avail"></div> Disponible</span>
+          <span><div class="dot dot-booked"></div> Ocupado</span>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <h4>📞 Contacto rápido</h4>
+        <div style="font-size:.88rem;color:var(--muted);line-height:2">
+          <div>📱 +506 8888-0000</div>
+          <div>✉️ senoresviento@gmail.com</div>
+          <div>🌐 instagram.com/senoresviento</div>
+          <div>📍 San José, Desamparados</div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:1rem" onclick="showPage('contratar')">Solicitar Contratación</button>
+      </div>
+
+      <div class="sidebar-card">
+        <h4>🏆 Logros</h4>
+        <div style="font-size:.85rem;color:var(--muted);line-height:2">
+          <div>🎵 Festival Nacional 2023</div>
+          <div>🥇 Premio Escena CR 2022</div>
+          <div>🎪 +200 shows realizados</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CONTRATAR ═══════════════ -->
+<div class="page" id="page-contratar">
+  <div class="form-page">
+    <h2>Solicitar Contratación</h2>
+    <p>Completa el formulario para enviar tu solicitud a <strong class="text-gold">Los Señores del Viento</strong></p>
+
+    <div class="step-bar">
+      <div class="step active" id="step1-tab">1. Evento</div>
+      <div class="step" id="step2-tab">2. Detalles</div>
+      <div class="step" id="step3-tab">3. Confirmar</div>
+    </div>
+
+    <!-- Step 1 -->
+    <div id="step1">
+      <div class="form-group">
+        <label>Nombre del cliente o empresa</label>
+        <input type="text" placeholder="Ej: Empresa XYZ S.A.">
+      </div>
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input type="email" placeholder="correo@ejemplo.com">
+      </div>
+      <div class="form-group">
+        <label>Teléfono de contacto</label>
+        <input type="tel" placeholder="+506 8000-0000">
+      </div>
+      <div class="form-group">
+        <label>Tipo de evento</label>
+        <select>
+          <option>Seleccionar...</option>
+          <option>Boda / Celebración</option>
+          <option>Evento corporativo</option>
+          <option>Festival</option>
+          <option>Cumpleaños / Quinceañera</option>
+          <option>Concierto privado</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="form-nav">
+        <button class="btn btn-outline" onclick="showPage('profile')">← Regresar</button>
+        <button class="btn btn-primary" onclick="goStep(2)">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="step2" style="display:none">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha del evento</label>
+          <input type="date">
+        </div>
+        <div class="form-group">
+          <label>Hora de inicio</label>
+          <input type="time">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Lugar del evento</label>
+        <input type="text" placeholder="Dirección completa o nombre del local">
+      </div>
+      <div class="form-group">
+        <label>Servicio solicitado</label>
+        <select>
+          <option>Show completo (90 min) — ₡250,000</option>
+          <option>Show corto (45 min) — ₡150,000</option>
+          <option>Música ambiental acústica — ₡80,000</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Notas adicionales o solicitudes especiales</label>
+        <textarea placeholder="Ej: Canciones específicas, requisitos especiales, número de personas esperadas..."></textarea>
+      </div>
+      <div class="form-nav">
+        <button class="btn btn-outline" onclick="goStep(1)">← Anterior</button>
+        <button class="btn btn-primary" onclick="goStep(3)">Revisar →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div id="step3" style="display:none">
+      <div class="sidebar-card">
+        <h4>Resumen de la Solicitud</h4>
+        <div style="font-size:.88rem;line-height:2.2;color:var(--muted)">
+          <div>🎸 <strong style="color:var(--text)">Artista:</strong> Los Señores del Viento</div>
+          <div>📅 <strong style="color:var(--text)">Fecha:</strong> Sábado 21 de junio, 2025</div>
+          <div>⏰ <strong style="color:var(--text)">Hora:</strong> 7:00 PM</div>
+          <div>📍 <strong style="color:var(--text)">Lugar:</strong> Hotel El Patio, San José</div>
+          <div>🎵 <strong style="color:var(--text)">Servicio:</strong> Show completo (90 min)</div>
+          <div>💰 <strong style="color:var(--text)">Monto total:</strong> <span class="text-gold">₡250,000</span></div>
+          <div>💳 <strong style="color:var(--text)">Adelanto (50%):</strong> <span class="text-gold">₡125,000</span></div>
+        </div>
+        <div class="divider"></div>
+        <div style="font-size:.8rem;color:var(--muted);line-height:1.6">
+          Al enviar esta solicitud, el artista recibirá una notificación y tendrá 24 horas para aceptar o proponer ajustes. Recibirás un correo de confirmación con los próximos pasos.
+        </div>
+      </div>
+      <div class="form-nav">
+        <button class="btn btn-outline" onclick="goStep(2)">← Anterior</button>
+        <button class="btn btn-accent" onclick="goStep('success')">✓ Enviar Solicitud</button>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div id="step-success" style="display:none">
+      <div class="success-box">
+        <div class="success-icon">🎉</div>
+        <h3>¡Solicitud Enviada!</h3>
+        <p>Los Señores del Viento recibirán tu solicitud y te responderán en máximo 24 horas. Revisa tu correo electrónico.</p>
+        <button class="btn btn-primary" onclick="showPage('explore')">Explorar más artistas</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ DASHBOARD ARTISTA ═══════════════ -->
+<div class="page" id="page-dashboard">
+  <div class="dash-layout">
+    <div class="dash-sidebar">
+      <div style="margin-bottom:1.5rem;padding:.5rem 1rem">
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:.3rem">Sesión como artista</div>
+        <div style="font-weight:600">Los Señores del Viento</div>
+        <div style="font-size:.8rem;color:var(--gold)">★ 4.9 • Verificado</div>
+      </div>
+      <div class="dash-nav-item active">📊 Resumen</div>
+      <div class="dash-nav-item">📅 Agenda</div>
+      <div class="dash-nav-item">📋 Solicitudes</div>
+      <div class="dash-nav-item">💼 Mis Servicios</div>
+      <div class="dash-nav-item">💬 Mensajes <span style="background:var(--accent);border-radius:999px;padding:.1rem .5rem;font-size:.7rem;margin-left:.4rem">3</span></div>
+      <div class="dash-nav-item">⭐ Reseñas</div>
+      <div class="dash-nav-item">👤 Mi Perfil</div>
+      <div style="margin-top:auto;padding-top:2rem">
+        <div class="dash-nav-item">⚙️ Configuración</div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-title">Panel del Artista</div>
+
+      <div class="kpis">
+        <div class="kpi-card">
+          <div class="kpi-label">Solicitudes este mes</div>
+          <div class="kpi-val">12</div>
+          <div class="kpi-change">↑ +3 vs mes anterior</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Shows confirmados</div>
+          <div class="kpi-val">7</div>
+          <div class="kpi-change">↑ +2 vs mes anterior</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Ingresos del mes</div>
+          <div class="kpi-val">₡1.2M</div>
+          <div class="kpi-change">↑ +15%</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Visitas al perfil</div>
+          <div class="kpi-val">284</div>
+          <div class="kpi-change">↑ +42</div>
+        </div>
+      </div>
+
+      <div class="profile-section-title">Solicitudes recientes</div>
+      <table class="requests-table">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Evento</th>
+            <th>Fecha</th>
+            <th>Servicio</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>María Rodríguez</strong><br><span style="font-size:.78rem;color:var(--muted)">Boda privada</span></td>
+            <td>Boda</td>
+            <td>21 Jun 2025</td>
+            <td>Show completo</td>
+            <td class="text-gold">₡250,000</td>
+            <td><span class="status-badge status-pending">Pendiente</span></td>
+            <td><button class="btn btn-primary" style="padding:.4rem .8rem;font-size:.8rem">Revisar</button></td>
+          </tr>
+          <tr>
+            <td><strong>Corp. Tech S.A.</strong><br><span style="font-size:.78rem;color:var(--muted)">Evento corp.</span></td>
+            <td>Corporativo</td>
+            <td>28 Jun 2025</td>
+            <td>Show corto</td>
+            <td class="text-gold">₡150,000</td>
+            <td><span class="status-badge status-confirmed">Confirmado</span></td>
+            <td><button class="btn btn-outline" style="padding:.4rem .8rem;font-size:.8rem">Ver</button></td>
+          </tr>
+          <tr>
+            <td><strong>Pedro Jiménez</strong><br><span style="font-size:.78rem;color:var(--muted)">Quinceañera</span></td>
+            <td>Celebración</td>
+            <td>14 Jun 2025</td>
+            <td>Show completo</td>
+            <td class="text-gold">₡250,000</td>
+            <td><span class="status-badge status-done">Realizado</span></td>
+            <td><button class="btn btn-outline" style="padding:.4rem .8rem;font-size:.8rem">Ver</button></td>
+          </tr>
+          <tr>
+            <td><strong>Festival Cultura</strong><br><span style="font-size:.78rem;color:var(--muted)">Festival público</span></td>
+            <td>Festival</td>
+            <td>7 Jun 2025</td>
+            <td>Show completo</td>
+            <td class="text-gold">₡250,000</td>
+            <td><span class="status-badge status-done">Realizado</span></td>
+            <td><button class="btn btn-outline" style="padding:.4rem .8rem;font-size:.8rem">Ver</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ REGISTRO ARTISTA ═══════════════ -->
+<div class="page" id="page-register">
+  <div class="form-page">
+    <h2>Registra tu Talento</h2>
+    <p>Crea tu perfil y empieza a recibir solicitudes de contratación de todo el país</p>
+
+    <div class="reg-tabs">
+      <div class="reg-tab active">Información Básica</div>
+      <div class="reg-tab">Servicios</div>
+      <div class="reg-tab">Condiciones</div>
+    </div>
+
+    <div class="form-group">
+      <label>Nombre artístico / Nombre del grupo</label>
+      <input type="text" placeholder="Ej: Los Señores del Viento">
+    </div>
+    <div class="form-group">
+      <label>Categoría artística principal</label>
+      <select>
+        <option>Seleccionar...</option>
+        <option>Grupo Musical</option>
+        <option>Danza / Baile</option>
+        <option>Teatro / Sketch</option>
+        <option>Stand-Up Comedy</option>
+        <option>Humorista</option>
+        <option>Malabarismo / Circo</option>
+        <option>Magia</option>
+        <option>Pintura en Vivo</option>
+        <option>Escultura</option>
+        <option>Otro</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Provincia</label>
+        <select>
+          <option>San José</option>
+          <option>Alajuela</option>
+          <option>Cartago</option>
+          <option>Heredia</option>
+          <option>Guanacaste</option>
+          <option>Puntarenas</option>
+          <option>Limón</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Número de integrantes</label>
+        <input type="number" placeholder="1" min="1">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Descripción del artista / grupo</label>
+      <textarea placeholder="Describe tu propuesta artística, experiencia y lo que te hace especial..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Géneros / Estilos (selecciona los que apliquen)</label>
+      <div class="tag-list mt1">
+        <span class="tag" onclick="this.classList.toggle('selected')">Rock</span>
+        <span class="tag" onclick="this.classList.toggle('selected')">Pop</span>
+        <span class="tag" onclick="this.classList.toggle('selected')">Cumbia</span>
+        <span class="tag" onclick="this.classList.toggle('selected')">Reggae</span>
+        <span class="tag" onclick="this.classList.toggle('selected')">Folclore</span>
+        <span class="tag" onclick="this.classList.toggle('selected')">Jazz</span>
+        <span class="tag" onclick="this.classList.toggle('selected')">Clásico</span>
+        <span class="tag" onclick="this.classList.toggle('selected')">Tropical</span>
+        <span class="tag" onclick="this.classList.toggle('selected')">Balada</span>
+        <span class="tag" onclick="this.classList.toggle('selected')">Electrónico</span>
+        <span class="tag" onclick="this.classList.toggle('selected')">Humor</span>
+        <span class="tag" onclick="this.classList.toggle('selected')">Infantil</span>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input type="email" placeholder="artista@correo.com">
+      </div>
+      <div class="form-group">
+        <label>Teléfono</label>
+        <input type="tel" placeholder="+506 8000-0000">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Precio base del servicio (₡)</label>
+      <input type="number" placeholder="50000">
+    </div>
+
+    <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:1rem">
+      <button class="btn btn-outline" onclick="showPage('home')">Cancelar</button>
+      <button class="btn btn-primary" onclick="showPage('dashboard')">Crear Perfil →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function goStep(n) {
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = 'none';
+    document.getElementById('step-success').style.display = 'none';
+
+    ['step1-tab','step2-tab','step3-tab'].forEach((id,i) => {
+      document.getElementById(id).className = 'step' + (i < n - 1 ? ' done' : i === n - 1 ? ' active' : '');
+    });
+
+    if (n === 'success') {
+      document.getElementById('step-success').style.display = 'block';
+      ['step1-tab','step2-tab','step3-tab'].forEach(id => {
+        document.getElementById(id).className = 'step done';
+      });
+    } else {
+      document.getElementById('step' + n).style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>
