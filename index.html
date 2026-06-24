@@ -3,723 +3,636 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ArteScena — Plataforma de Artistas</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>ArteScena</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,600;1,300;1,600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0e0c0a;
-    --surface: #181410;
-    --card: #1f1b17;
-    --border: #2e2820;
-    --gold: #c9a84c;
-    --gold-light: #e8cc80;
-    --text: #f0ead8;
-    --muted: #8a7e6a;
-    --accent: #d45f3c;
-    --radius: 12px;
-  }
+/* ─── TOKENS ─── */
+:root {
+  --bg: #f8f7f4;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --border: #e8e4de;
+  --border-strong: #c8c2b8;
+  --ink: #1a1814;
+  --ink-2: #5a5650;
+  --ink-3: #9a9590;
+  --accent: #2d5a27;
+  --accent-light: #e8f0e6;
+  --accent-dark: #1e3e1a;
+  --warm: #c4622d;
+  --warm-light: #fdf0e8;
+  --gold: #b8972a;
+  --gold-light: #fdf6e3;
+  --r: 8px;
+  --r-lg: 14px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,.08), 0 12px 40px rgba(0,0,0,.06);
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+/* ─── RESET ─── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+a { text-decoration:none; color:inherit; }
+button { font-family:'Inter',sans-serif; cursor:pointer; border:none; background:none; }
+input, select, textarea { font-family:'Inter',sans-serif; }
+ul { list-style:none; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border-strong); border-radius:3px; }
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 2.5rem;
-    background: rgba(14,12,10,0.92);
-    border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(12px);
-  }
+/* ─── TYPOGRAPHY ─── */
+.serif { font-family:'Fraunces',serif; }
+.display { font-family:'Fraunces',serif; font-size:clamp(2.4rem,6vw,4.8rem); font-weight:300; line-height:1.1; letter-spacing:-.02em; }
+.display em { font-style:italic; color:var(--accent); }
+.heading { font-family:'Fraunces',serif; font-size:1.6rem; font-weight:300; letter-spacing:-.01em; }
+.label { font-size:.72rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); }
 
-  .logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    color: var(--gold);
-    letter-spacing: 1px;
-  }
-  .logo span { color: var(--accent); }
+/* ─── LAYOUT ─── */
+.page { display:none; min-height:100vh; padding-top:64px; }
+.page.active { display:block; }
+.container { max-width:1160px; margin:0 auto; padding:0 24px; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.grid-4 { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px; }
+@media(max-width:768px){
+  .grid-2,.grid-3 { grid-template-columns:1fr; }
+  .grid-4 { grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); }
+  .hide-mobile { display:none!important; }
+}
 
-  .nav-links { display: flex; gap: 2rem; align-items: center; }
-  .nav-links a {
-    color: var(--muted); text-decoration: none; font-size: .9rem;
-    transition: color .2s;
-  }
-  .nav-links a:hover { color: var(--text); }
+/* ─── NAVIGATION ─── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  height:64px; background:rgba(248,247,244,.92);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(16px);
+  display:flex; align-items:center;
+}
+.nav-inner {
+  width:100%; max-width:1160px; margin:0 auto; padding:0 24px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.logo {
+  font-family:'Fraunces',serif; font-size:1.3rem; font-weight:600;
+  color:var(--ink); letter-spacing:-.02em;
+}
+.logo .dot { color:var(--accent); }
+.nav-links { display:flex; align-items:center; gap:4px; }
+.nav-link {
+  padding:6px 14px; border-radius:6px; font-size:.875rem; font-weight:500;
+  color:var(--ink-2); transition:all .15s;
+}
+.nav-link:hover { background:var(--border); color:var(--ink); }
+.nav-link.active-link { color:var(--ink); }
 
-  .btn {
-    padding: .6rem 1.4rem; border-radius: 6px; font-family: 'DM Sans', sans-serif;
-    font-size: .9rem; cursor: pointer; border: none; transition: all .2s;
-  }
-  .btn-outline {
-    background: transparent; color: var(--gold);
-    border: 1px solid var(--gold);
-  }
-  .btn-outline:hover { background: var(--gold); color: var(--bg); }
-  .btn-primary {
-    background: var(--gold); color: var(--bg); font-weight: 600;
-  }
-  .btn-primary:hover { background: var(--gold-light); }
-  .btn-accent {
-    background: var(--accent); color: #fff; font-weight: 600;
-  }
+/* ─── BUTTONS ─── */
+.btn { display:inline-flex; align-items:center; gap:8px; padding:10px 20px; border-radius:var(--r); font-size:.875rem; font-weight:500; transition:all .15s; border:1px solid transparent; }
+.btn-sm { padding:7px 14px; font-size:.8rem; }
+.btn-lg { padding:14px 28px; font-size:.95rem; }
+.btn-primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+.btn-primary:hover { background:var(--accent-dark); border-color:var(--accent-dark); }
+.btn-outline { background:transparent; color:var(--ink); border-color:var(--border-strong); }
+.btn-outline:hover { background:var(--border); }
+.btn-ghost { background:transparent; color:var(--ink-2); }
+.btn-ghost:hover { background:var(--border); color:var(--ink); }
+.btn-warm { background:var(--warm); color:#fff; border-color:var(--warm); }
+.btn-warm:hover { background:#a8521f; }
+.btn-danger { background:#fff; color:#c0392b; border-color:#f0c0bc; }
+.btn-danger:hover { background:#fdf2f2; }
 
-  /* PAGES */
-  .page { display: none; padding-top: 70px; min-height: 100vh; }
-  .page.active { display: block; }
+/* ─── FORM ELEMENTS ─── */
+.form-group { margin-bottom:18px; }
+.form-group label { display:block; font-size:.82rem; font-weight:500; color:var(--ink-2); margin-bottom:6px; }
+.form-control {
+  width:100%; padding:10px 14px;
+  background:var(--surface); border:1px solid var(--border-strong);
+  border-radius:var(--r); color:var(--ink); font-size:.9rem;
+  transition:border-color .15s, box-shadow .15s;
+}
+.form-control:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(45,90,39,.1); }
+.form-control::placeholder { color:var(--ink-3); }
+select.form-control { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9590' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:38px; }
+textarea.form-control { resize:vertical; min-height:110px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media(max-width:600px){ .form-row { grid-template-columns:1fr; } }
+.form-error { font-size:.78rem; color:#c0392b; margin-top:4px; display:none; }
+.form-control.invalid { border-color:#e74c3c; }
 
-  /* ── HOME ── */
-  .hero {
-    min-height: 90vh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 3rem 2rem;
-    background: radial-gradient(ellipse at 50% 30%, #2a1f0e 0%, var(--bg) 70%);
-    position: relative; overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    pointer-events: none;
-  }
-  .hero-tag {
-    display: inline-block; padding: .3rem 1rem; border: 1px solid var(--gold);
-    border-radius: 999px; font-size: .8rem; color: var(--gold);
-    margin-bottom: 1.5rem; letter-spacing: 2px; text-transform: uppercase;
-  }
-  .hero h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2.5rem, 7vw, 5.5rem);
-    line-height: 1.1; font-weight: 900;
-    max-width: 900px;
-  }
-  .hero h1 em { color: var(--gold); font-style: italic; }
-  .hero p {
-    max-width: 560px; color: var(--muted); line-height: 1.7;
-    font-size: 1.05rem; margin: 1.5rem auto 2.5rem;
-  }
-  .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+/* ─── CARDS ─── */
+.card { background:var(--card); border:1px solid var(--border); border-radius:var(--r-lg); }
+.card-padded { padding:24px; }
 
-  .stats {
-    display: flex; justify-content: center; gap: 3rem; padding: 3rem 2rem;
-    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-  }
-  .stat { text-align: center; }
-  .stat-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.5rem; font-weight: 700; color: var(--gold);
-  }
-  .stat-label { font-size: .85rem; color: var(--muted); margin-top: .2rem; }
+/* ─── TAGS / CHIPS ─── */
+.chip { display:inline-flex; align-items:center; padding:4px 12px; border-radius:999px; font-size:.78rem; font-weight:500; border:1px solid var(--border); color:var(--ink-2); cursor:pointer; transition:all .15s; user-select:none; }
+.chip:hover,.chip.selected { background:var(--accent-light); border-color:var(--accent); color:var(--accent); }
+.chip-list { display:flex; flex-wrap:wrap; gap:8px; }
 
-  /* Categories */
-  .section { padding: 4rem 2.5rem; max-width: 1200px; margin: 0 auto; }
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem; margin-bottom: .5rem;
-  }
-  .section-sub { color: var(--muted); margin-bottom: 2rem; }
+/* ─── TOAST ─── */
+#toast {
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--ink); color:#fff; padding:12px 24px; border-radius:var(--r);
+  font-size:.875rem; font-weight:500; z-index:999; opacity:0;
+  transition:all .3s; pointer-events:none; white-space:nowrap;
+  box-shadow:var(--shadow-lg);
+}
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+#toast.success { background:var(--accent); }
+#toast.error { background:#c0392b; }
 
-  .categories {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
-  }
-  .cat-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 1.5rem 1rem;
-    text-align: center; cursor: pointer; transition: all .25s;
-  }
-  .cat-card:hover {
-    border-color: var(--gold); transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(201,168,76,.15);
-  }
-  .cat-icon { font-size: 2rem; margin-bottom: .6rem; display: block; }
-  .cat-name { font-size: .85rem; font-weight: 500; }
+/* ─── STATUS BADGES ─── */
+.badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:999px; font-size:.73rem; font-weight:600; }
+.badge-pending { background:var(--gold-light); color:var(--gold); }
+.badge-confirmed { background:var(--accent-light); color:var(--accent); }
+.badge-done { background:var(--border); color:var(--ink-3); }
+.badge-cancelled { background:#fdf2f2; color:#c0392b; }
 
-  /* Artists grid */
-  .artists-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1.5rem;
-  }
-  .artist-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); overflow: hidden;
-    transition: all .25s; cursor: pointer;
-  }
-  .artist-card:hover {
-    border-color: var(--gold); transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0,0,0,.4);
-  }
-  .artist-banner {
-    height: 120px; display: flex; align-items: center; justify-content: center;
-    font-size: 3.5rem;
-  }
-  .artist-body { padding: 1.2rem; }
-  .artist-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.15rem; font-weight: 700; margin-bottom: .2rem;
-  }
-  .artist-type {
-    font-size: .8rem; color: var(--gold); text-transform: uppercase;
-    letter-spacing: 1px; margin-bottom: .6rem;
-  }
-  .artist-desc { font-size: .85rem; color: var(--muted); line-height: 1.5; }
-  .artist-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);
-  }
-  .rating { color: var(--gold); font-size: .85rem; }
-  .price-tag { font-size: .85rem; color: var(--text); font-weight: 500; }
+/* ─── DIVIDER ─── */
+.divider { height:1px; background:var(--border); margin:24px 0; }
 
-  /* ── ARTIST PROFILE ── */
-  .profile-hero {
-    background: linear-gradient(135deg, #2a1f0e, #1a1208);
-    padding: 3rem 2.5rem 2rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .profile-top {
-    max-width: 1100px; margin: 0 auto;
-    display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;
-  }
-  .profile-avatar {
-    width: 120px; height: 120px; border-radius: 50%;
-    background: var(--card); border: 3px solid var(--gold);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 3.5rem; flex-shrink: 0;
-  }
-  .profile-info { flex: 1; min-width: 200px; }
-  .profile-info h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem; font-weight: 900; margin-bottom: .3rem;
-  }
-  .profile-badge {
-    display: inline-block; padding: .25rem .9rem;
-    background: rgba(201,168,76,.15); border: 1px solid var(--gold);
-    border-radius: 999px; font-size: .8rem; color: var(--gold);
-    margin-bottom: .8rem;
-  }
-  .profile-meta { display: flex; gap: 1.5rem; flex-wrap: wrap; }
-  .profile-meta span { font-size: .9rem; color: var(--muted); }
-  .profile-meta span strong { color: var(--text); }
+/* ═══════════════════════════════════
+   HOME
+═══════════════════════════════════ */
+.hero {
+  min-height:88vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  text-align:center; padding:80px 24px 64px;
+}
+.hero-eyebrow {
+  display:inline-flex; align-items:center; gap:8px;
+  border:1px solid var(--border-strong); border-radius:999px;
+  padding:5px 16px; font-size:.78rem; color:var(--ink-2); margin-bottom:32px;
+}
+.hero-eyebrow span { width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+.hero-sub { max-width:500px; margin:20px auto 40px; color:var(--ink-2); font-size:1.05rem; line-height:1.7; }
+.hero-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
 
-  .profile-actions { display: flex; gap: .8rem; align-items: center; margin-top: 1rem; }
+.stats-bar { border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.stats-inner { display:flex; justify-content:space-around; padding:36px 24px; flex-wrap:wrap; gap:24px; max-width:1160px; margin:0 auto; }
+.stat-num { font-family:'Fraunces',serif; font-size:2.2rem; font-weight:600; color:var(--ink); }
+.stat-lbl { font-size:.8rem; color:var(--ink-3); margin-top:2px; }
 
-  .profile-content {
-    max-width: 1100px; margin: 2rem auto;
-    padding: 0 2.5rem;
-    display: grid; grid-template-columns: 1fr 320px; gap: 2rem;
-  }
-  @media(max-width: 768px) {
-    .profile-content { grid-template-columns: 1fr; }
-  }
+.categories-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:12px; }
+.cat-item {
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  padding:20px 12px; border:1px solid var(--border); border-radius:var(--r-lg);
+  cursor:pointer; transition:all .2s; background:var(--surface); text-align:center;
+}
+.cat-item:hover { border-color:var(--accent); background:var(--accent-light); }
+.cat-icon { font-size:1.8rem; line-height:1; }
+.cat-label { font-size:.78rem; font-weight:500; color:var(--ink-2); }
+.cat-item:hover .cat-label { color:var(--accent); }
 
-  .profile-section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.2rem; margin-bottom: 1rem;
-    padding-bottom: .5rem; border-bottom: 1px solid var(--border);
-  }
+.section-header { margin-bottom:32px; }
+.section-header + * { /* space */ }
+.section-title { font-family:'Fraunces',serif; font-size:1.8rem; font-weight:300; letter-spacing:-.01em; }
+.section-sub { color:var(--ink-3); font-size:.875rem; margin-top:6px; }
 
-  .services-list { display: flex; flex-direction: column; gap: .8rem; margin-bottom: 2rem; }
-  .service-item {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 1rem 1.2rem;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .service-name { font-weight: 500; }
-  .service-price { color: var(--gold); font-weight: 600; }
+/* ═══════════════════════════════════
+   EXPLORE
+═══════════════════════════════════ */
+.search-row { display:flex; gap:10px; margin-bottom:28px; }
+.search-row input { flex:1; }
+.search-row select { width:200px; }
+@media(max-width:600px){ .search-row { flex-wrap:wrap; } .search-row select { width:100%; } }
 
-  .conditions-list { list-style: none; color: var(--muted); font-size: .9rem; line-height: 2; }
-  .conditions-list li::before { content: '◆ '; color: var(--gold); font-size: .6rem; }
+.artist-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg);
+  overflow:hidden; cursor:pointer; transition:all .2s; display:flex; flex-direction:column;
+}
+.artist-card:hover { border-color:var(--border-strong); box-shadow:var(--shadow); transform:translateY(-2px); }
+.artist-banner { height:110px; display:flex; align-items:center; justify-content:center; font-size:3rem; flex-shrink:0; }
+.artist-body { padding:16px; flex:1; display:flex; flex-direction:column; }
+.artist-type { font-size:.72rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); margin-bottom:4px; }
+.artist-name { font-family:'Fraunces',serif; font-size:1.1rem; font-weight:600; color:var(--ink); margin-bottom:6px; }
+.artist-desc { font-size:.82rem; color:var(--ink-2); line-height:1.55; flex:1; }
+.artist-footer { display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding-top:12px; border-top:1px solid var(--border); }
+.rating { font-size:.8rem; color:var(--gold); font-weight:500; }
+.rating .count { color:var(--ink-3); font-weight:400; }
+.price { font-size:.82rem; font-weight:600; color:var(--ink); }
+.empty-state { text-align:center; padding:64px 24px; color:var(--ink-3); }
+.empty-state .empty-icon { font-size:2.5rem; margin-bottom:12px; }
+.empty-state p { font-size:.9rem; }
 
-  .sidebar-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem;
-  }
-  .sidebar-card h4 {
-    font-family: 'Playfair Display', serif;
-    margin-bottom: 1rem; font-size: 1rem;
-  }
+/* ═══════════════════════════════════
+   PROFILE
+═══════════════════════════════════ */
+.profile-hero-bg {
+  background:var(--surface); border-bottom:1px solid var(--border);
+  padding:40px 24px 32px;
+}
+.profile-hero-inner { max-width:1160px; margin:0 auto; display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap; }
+.avatar { width:100px; height:100px; border-radius:50%; background:var(--border); border:2px solid var(--border-strong); display:flex; align-items:center; justify-content:center; font-size:2.8rem; flex-shrink:0; }
+.profile-info { flex:1; min-width:200px; }
+.profile-name { font-family:'Fraunces',serif; font-size:2rem; font-weight:600; letter-spacing:-.02em; margin-bottom:6px; }
+.profile-type-badge { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border-strong); border-radius:999px; padding:3px 12px; font-size:.78rem; color:var(--ink-2); margin-bottom:14px; }
+.profile-meta { display:flex; gap:20px; flex-wrap:wrap; font-size:.82rem; color:var(--ink-2); }
+.profile-meta strong { color:var(--ink); }
+.profile-actions { display:flex; gap:8px; margin-top:18px; flex-wrap:wrap; }
 
-  .calendar-grid {
-    display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
-    margin-bottom: 1rem;
-  }
-  .cal-day {
-    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-    font-size: .75rem; border-radius: 4px; cursor: pointer;
-    transition: all .15s;
-  }
-  .cal-day.header { color: var(--muted); font-size: .7rem; cursor: default; }
-  .cal-day.available { background: rgba(201,168,76,.15); color: var(--gold-light); }
-  .cal-day.available:hover { background: rgba(201,168,76,.35); }
-  .cal-day.booked { background: rgba(212,95,60,.15); color: var(--accent); }
-  .cal-day.empty { pointer-events: none; }
-  .cal-day.today { border: 1px solid var(--gold); font-weight: 700; }
+.profile-layout { max-width:1160px; margin:40px auto; padding:0 24px; display:grid; grid-template-columns:1fr 300px; gap:28px; }
+@media(max-width:880px){ .profile-layout { grid-template-columns:1fr; } }
 
-  .legend { display: flex; gap: 1rem; font-size: .75rem; color: var(--muted); flex-wrap: wrap; }
-  .legend span { display: flex; align-items: center; gap: .4rem; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; }
-  .dot-avail { background: var(--gold); }
-  .dot-booked { background: var(--accent); }
+.reviews-list { display:flex; flex-direction:column; gap:16px; }
+.review-item { padding:16px; background:var(--bg); border-radius:var(--r); }
+.review-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.reviewer-name { font-weight:600; font-size:.875rem; }
+.review-text { font-size:.85rem; color:var(--ink-2); line-height:1.55; }
+.review-date { font-size:.72rem; color:var(--ink-3); }
 
-  /* ── CONTRATAR (form) ── */
-  .form-page { max-width: 700px; margin: 0 auto; padding: 2rem 2rem; }
-  .form-page h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem; margin-bottom: .5rem;
-  }
-  .form-page p { color: var(--muted); margin-bottom: 2rem; }
+.service-item { display:flex; align-items:center; justify-content:space-between; padding:14px; border:1px solid var(--border); border-radius:var(--r); }
+.service-name { font-weight:500; font-size:.9rem; }
+.service-desc { font-size:.78rem; color:var(--ink-3); margin-top:2px; }
+.service-price { font-weight:600; color:var(--accent); font-size:.9rem; white-space:nowrap; margin-left:16px; }
 
-  .step-bar {
-    display: flex; gap: 0; margin-bottom: 2.5rem;
-  }
-  .step {
-    flex: 1; text-align: center; padding: .6rem; font-size: .8rem;
-    background: var(--card); border: 1px solid var(--border);
-    color: var(--muted); position: relative;
-  }
-  .step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
-  .step:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
-  .step.active { background: rgba(201,168,76,.15); color: var(--gold); border-color: var(--gold); }
-  .step.done { background: rgba(201,168,76,.08); color: var(--muted); }
+/* Calendar */
+.calendar { }
+.cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.cal-nav-btn { width:30px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-size:1rem; background:none; border:1px solid var(--border); cursor:pointer; color:var(--ink-2); transition:all .15s; }
+.cal-nav-btn:hover { background:var(--border); color:var(--ink); }
+.cal-month { font-weight:600; font-size:.875rem; }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+.cal-day { aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:.75rem; border-radius:6px; }
+.cal-header { color:var(--ink-3); font-size:.68rem; font-weight:600; }
+.cal-empty { }
+.cal-available { background:var(--accent-light); color:var(--accent); cursor:pointer; font-weight:500; }
+.cal-available:hover { background:var(--accent); color:#fff; }
+.cal-booked { background:var(--warm-light); color:var(--warm); }
+.cal-today { outline:2px solid var(--accent); outline-offset:1px; }
+.cal-legend { display:flex; gap:12px; margin-top:10px; font-size:.72rem; color:var(--ink-3); }
+.cal-legend span { display:flex; align-items:center; gap:5px; }
+.dot { width:8px; height:8px; border-radius:50%; }
 
-  .form-group { margin-bottom: 1.4rem; }
-  .form-group label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: .5rem; }
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    width: 100%; padding: .8rem 1rem;
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 8px; color: var(--text);
-    font-family: 'DM Sans', sans-serif; font-size: .9rem;
-    transition: border-color .2s;
-  }
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus {
-    outline: none; border-color: var(--gold);
-  }
-  .form-group textarea { resize: vertical; min-height: 100px; }
+/* ═══════════════════════════════════
+   BOOKING FORM
+═══════════════════════════════════ */
+.form-page { max-width:680px; margin:40px auto; padding:0 24px 80px; }
+.form-page-title { font-family:'Fraunces',serif; font-size:2rem; font-weight:300; margin-bottom:6px; }
+.form-page-sub { color:var(--ink-2); font-size:.9rem; margin-bottom:32px; }
 
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.step-bar { display:flex; margin-bottom:32px; border-radius:var(--r); overflow:hidden; border:1px solid var(--border); }
+.step { flex:1; padding:10px 8px; text-align:center; font-size:.78rem; font-weight:500; background:var(--surface); color:var(--ink-3); transition:all .2s; }
+.step:not(:last-child) { border-right:1px solid var(--border); }
+.step.active { background:var(--accent); color:#fff; }
+.step.done { background:var(--accent-light); color:var(--accent); }
 
-  .form-nav { display: flex; justify-content: space-between; margin-top: 2rem; }
+.form-nav { display:flex; justify-content:space-between; margin-top:28px; }
 
-  /* Success */
-  .success-box {
-    text-align: center; padding: 4rem 2rem;
-  }
-  .success-icon { font-size: 4rem; margin-bottom: 1rem; }
-  .success-box h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem; margin-bottom: .8rem;
-  }
-  .success-box p { color: var(--muted); max-width: 400px; margin: 0 auto 2rem; }
+.summary-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--r-lg); padding:20px; margin-bottom:20px; }
+.summary-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:.875rem; }
+.summary-row:last-child { border-bottom:none; }
+.summary-row .key { color:var(--ink-2); }
+.summary-row .val { font-weight:500; color:var(--ink); }
+.summary-total { font-weight:600; font-size:1rem; }
+.summary-total .val { color:var(--accent); }
+.terms-note { font-size:.78rem; color:var(--ink-3); line-height:1.6; padding:12px; background:var(--border); border-radius:var(--r); margin-top:16px; }
 
-  /* ── DASHBOARD ── */
-  .dash-layout {
-    display: grid; grid-template-columns: 220px 1fr;
-    min-height: calc(100vh - 70px);
-  }
-  .dash-sidebar {
-    background: var(--surface); border-right: 1px solid var(--border);
-    padding: 2rem 1rem;
-  }
-  .dash-nav-item {
-    display: flex; align-items: center; gap: .8rem;
-    padding: .75rem 1rem; border-radius: 8px; cursor: pointer;
-    font-size: .9rem; color: var(--muted); transition: all .2s; margin-bottom: .2rem;
-  }
-  .dash-nav-item:hover, .dash-nav-item.active {
-    background: rgba(201,168,76,.1); color: var(--gold);
-  }
-  .dash-content { padding: 2rem; }
+.success-box { text-align:center; padding:64px 24px; }
+.success-icon { font-size:3rem; margin-bottom:16px; }
+.success-title { font-family:'Fraunces',serif; font-size:1.8rem; font-weight:300; margin-bottom:10px; }
+.success-sub { color:var(--ink-2); font-size:.9rem; max-width:380px; margin:0 auto 28px; line-height:1.6; }
 
-  .dash-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem; margin-bottom: 2rem;
-  }
+/* ═══════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════ */
+.dash-layout { display:grid; grid-template-columns:220px 1fr; min-height:calc(100vh - 64px); }
+@media(max-width:768px){ .dash-layout { grid-template-columns:1fr; } }
+.dash-sidebar {
+  background:var(--surface); border-right:1px solid var(--border);
+  padding:24px 12px; display:flex; flex-direction:column;
+}
+.dash-profile { padding:8px 12px 20px; border-bottom:1px solid var(--border); margin-bottom:12px; }
+.dash-profile-name { font-weight:600; font-size:.9rem; }
+.dash-profile-sub { font-size:.75rem; color:var(--ink-3); margin-top:2px; }
+.dash-nav-item {
+  display:flex; align-items:center; gap:10px; padding:9px 12px;
+  border-radius:var(--r); font-size:.875rem; color:var(--ink-2);
+  cursor:pointer; transition:all .15s; margin-bottom:2px;
+}
+.dash-nav-item:hover { background:var(--bg); color:var(--ink); }
+.dash-nav-item.active { background:var(--accent-light); color:var(--accent); font-weight:500; }
+.dash-nav-item .icon { width:18px; text-align:center; }
+.dash-badge { background:var(--warm); color:#fff; border-radius:999px; padding:1px 7px; font-size:.68rem; font-weight:600; margin-left:auto; }
+.dash-content { padding:32px; }
+@media(max-width:768px){ .dash-content { padding:20px 16px; } }
 
-  .kpis {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 1rem; margin-bottom: 2rem;
-  }
-  .kpi-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 1.2rem;
-  }
-  .kpi-label { font-size: .8rem; color: var(--muted); margin-bottom: .3rem; }
-  .kpi-val {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem; font-weight: 700; color: var(--gold);
-  }
-  .kpi-change { font-size: .8rem; color: #5cb85c; margin-top: .2rem; }
+.dash-title { font-family:'Fraunces',serif; font-size:1.5rem; font-weight:300; margin-bottom:24px; }
+.kpis { display:grid; grid-template-columns:repeat(auto-fill,minmax(165px,1fr)); gap:16px; margin-bottom:32px; }
+.kpi { background:var(--bg); border-radius:var(--r-lg); padding:18px; border:1px solid var(--border); }
+.kpi-label { font-size:.75rem; color:var(--ink-3); font-weight:500; margin-bottom:6px; }
+.kpi-val { font-family:'Fraunces',serif; font-size:2rem; font-weight:600; color:var(--ink); }
+.kpi-change { font-size:.75rem; color:var(--accent); margin-top:3px; }
 
-  .requests-table { width: 100%; border-collapse: collapse; }
-  .requests-table th {
-    text-align: left; font-size: .8rem; color: var(--muted);
-    padding: .7rem 1rem; border-bottom: 1px solid var(--border);
-    font-weight: 500;
-  }
-  .requests-table td {
-    padding: .9rem 1rem; border-bottom: 1px solid var(--border);
-    font-size: .88rem;
-  }
-  .status-badge {
-    display: inline-block; padding: .2rem .7rem; border-radius: 999px;
-    font-size: .75rem; font-weight: 500;
-  }
-  .status-pending { background: rgba(201,168,76,.15); color: var(--gold); }
-  .status-confirmed { background: rgba(92,184,92,.15); color: #5cb85c; }
-  .status-done { background: rgba(138,126,106,.15); color: var(--muted); }
+.table-wrap { overflow-x:auto; }
+.data-table { width:100%; border-collapse:collapse; }
+.data-table th { text-align:left; font-size:.72rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); padding:10px 16px; border-bottom:1px solid var(--border); white-space:nowrap; }
+.data-table td { padding:14px 16px; border-bottom:1px solid var(--border); font-size:.875rem; vertical-align:middle; }
+.data-table tr:last-child td { border-bottom:none; }
+.data-table tr:hover td { background:var(--bg); }
 
-  /* Misc */
-  .divider { height: 1px; background: var(--border); margin: 2rem 0; }
-  .text-gold { color: var(--gold); }
-  .text-muted { color: var(--muted); }
-  .mt1 { margin-top: .5rem; }
-  .mt2 { margin-top: 1rem; }
-  .flex { display: flex; }
-  .gap1 { gap: .5rem; }
+.dash-section-title { font-size:.875rem; font-weight:600; color:var(--ink); margin:28px 0 14px; padding-bottom:10px; border-bottom:1px solid var(--border); }
 
-  /* Search bar */
-  .search-bar {
-    display: flex; gap: .8rem; max-width: 700px; margin: 0 auto 3rem;
-    padding: 0 1rem;
-  }
-  .search-bar input {
-    flex: 1; padding: .9rem 1.2rem;
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 8px; color: var(--text);
-    font-family: 'DM Sans', sans-serif; font-size: .95rem;
-  }
-  .search-bar input:focus { outline: none; border-color: var(--gold); }
+.msg-list { display:flex; flex-direction:column; gap:1px; }
+.msg-item { padding:16px; border-radius:var(--r); display:flex; gap:14px; align-items:flex-start; cursor:pointer; transition:background .15s; }
+.msg-item:hover { background:var(--bg); }
+.msg-item.unread { background:var(--accent-light); }
+.msg-avatar { width:36px; height:36px; border-radius:50%; background:var(--border); display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+.msg-name { font-weight:600; font-size:.875rem; }
+.msg-preview { font-size:.8rem; color:var(--ink-2); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:300px; }
+.msg-time { font-size:.72rem; color:var(--ink-3); margin-left:auto; white-space:nowrap; }
 
-  /* Registration */
-  .reg-tabs { display: flex; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
-  .reg-tab {
-    padding: .8rem 2rem; cursor: pointer; font-size: .9rem;
-    color: var(--muted); border-bottom: 2px solid transparent;
-    transition: all .2s;
-  }
-  .reg-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+/* Dashboard panel sections */
+.dash-panel { display:none; }
+.dash-panel.active { display:block; }
 
-  .tag-list { display: flex; flex-wrap: wrap; gap: .5rem; }
-  .tag {
-    padding: .3rem .9rem; border: 1px solid var(--border);
-    border-radius: 999px; font-size: .8rem; cursor: pointer; color: var(--muted);
-    transition: all .2s;
-  }
-  .tag:hover, .tag.selected {
-    border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,.1);
-  }
+/* ═══════════════════════════════════
+   REGISTER
+═══════════════════════════════════ */
+.reg-tabs { display:flex; border-bottom:1px solid var(--border); margin-bottom:28px; }
+.reg-tab { padding:10px 20px; font-size:.85rem; font-weight:500; color:var(--ink-3); border-bottom:2px solid transparent; cursor:pointer; transition:all .15s; }
+.reg-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+
+/* ═══════════════════════════════════
+   LOGIN / AUTH MODAL
+═══════════════════════════════════ */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:300;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  opacity:0; pointer-events:none; transition:opacity .2s;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open { opacity:1; pointer-events:auto; }
+.modal {
+  background:var(--surface); border-radius:var(--r-lg); padding:32px;
+  width:100%; max-width:420px; box-shadow:var(--shadow-lg);
+  transform:translateY(8px); transition:transform .2s;
+  position:relative;
+}
+.modal-overlay.open .modal { transform:translateY(0); }
+.modal-title { font-family:'Fraunces',serif; font-size:1.6rem; font-weight:300; margin-bottom:6px; }
+.modal-sub { font-size:.85rem; color:var(--ink-2); margin-bottom:24px; }
+.modal-close { position:absolute; top:16px; right:16px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:6px; color:var(--ink-3); cursor:pointer; transition:background .15s; }
+.modal-close:hover { background:var(--border); color:var(--ink); }
+.modal-switch { text-align:center; margin-top:16px; font-size:.82rem; color:var(--ink-2); }
+.modal-switch a { color:var(--accent); font-weight:500; cursor:pointer; }
+
+/* Quick booking modal */
+.booking-modal-inner { max-width:540px; }
+
+/* ─── SECTION SPACING ─── */
+.section { padding:64px 24px; }
+.section:first-of-type { padding-top:40px; }
+.section + .section { padding-top:0; }
+
+/* ─── SIDEBAR WIDGET ─── */
+.sidebar-widget { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); padding:20px; margin-bottom:20px; }
+.sidebar-widget h4 { font-size:.875rem; font-weight:600; margin-bottom:14px; }
+.contact-row { font-size:.82rem; color:var(--ink-2); padding:6px 0; display:flex; align-items:center; gap:10px; }
+.contact-row .icon { flex-shrink:0; }
+
+/* Achievements */
+.achievement { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:.82rem; }
+.achievement:last-child { border-bottom:none; }
+.achievement .ach-icon { font-size:1.1rem; }
+.achievement .ach-label { color:var(--ink-2); }
+
+/* ─── SEARCH HIGHLIGHT ─── */
+mark { background:var(--gold-light); color:var(--ink); border-radius:2px; }
+
 </style>
 </head>
 <body>
 
-<!-- NAV -->
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <div class="modal-close" onclick="closeModal('auth-modal')">✕</div>
+    <div id="auth-login-view">
+      <div class="modal-title">Iniciar sesión</div>
+      <div class="modal-sub">Accede a tu cuenta de ArteScena</div>
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input class="form-control" type="email" id="login-email" placeholder="correo@ejemplo.com">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input class="form-control" type="password" id="login-password" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="handleLogin()">Entrar</button>
+      <div class="modal-switch">¿No tienes cuenta? <a onclick="switchAuthView('register')">Regístrate</a></div>
+    </div>
+    <div id="auth-register-view" style="display:none">
+      <div class="modal-title">Crear cuenta</div>
+      <div class="modal-sub">Únete como cliente para contratar artistas</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input class="form-control" type="text" id="reg-nombre" placeholder="Tu nombre">
+        </div>
+        <div class="form-group">
+          <label>Apellido</label>
+          <input class="form-control" type="text" id="reg-apellido" placeholder="Tu apellido">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input class="form-control" type="email" id="reg-email" placeholder="correo@ejemplo.com">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input class="form-control" type="password" id="reg-pass" placeholder="Mínimo 6 caracteres">
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="handleRegister()">Crear cuenta</button>
+      <div class="modal-switch">¿Ya tienes cuenta? <a onclick="switchAuthView('login')">Inicia sesión</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAVIGATION -->
 <nav>
-  <div class="logo">Arte<span>Scena</span></div>
-  <div class="nav-links">
-    <a href="#" onclick="showPage('home')">Inicio</a>
-    <a href="#" onclick="showPage('explore')">Explorar</a>
-    <a href="#" onclick="showPage('dashboard')">Mi Panel</a>
-    <button class="btn btn-outline" onclick="showPage('register')">Soy Artista</button>
-    <button class="btn btn-primary" onclick="showPage('explore')">Contratar</button>
+  <div class="nav-inner">
+    <div class="logo" onclick="showPage('home')" style="cursor:pointer">Arte<span class="dot">·</span>Scena</div>
+    <div class="nav-links">
+      <a class="nav-link" onclick="showPage('home')">Inicio</a>
+      <a class="nav-link" onclick="showPage('explore')">Explorar</a>
+      <div id="nav-auth-btns">
+        <a class="nav-link" onclick="openModal('auth-modal')">Iniciar sesión</a>
+        <button class="btn btn-primary btn-sm" onclick="showPage('register')">Soy Artista</button>
+      </div>
+      <div id="nav-user-btns" style="display:none;align-items:center;gap:8px;">
+        <a class="nav-link" onclick="showPage('dashboard')">Mi Panel</a>
+        <span id="nav-username" style="font-size:.82rem;color:var(--ink-2);font-weight:500"></span>
+        <button class="btn btn-ghost btn-sm" onclick="handleLogout()">Salir</button>
+      </div>
+    </div>
   </div>
 </nav>
 
 <!-- ═══════════════ HOME ═══════════════ -->
 <div class="page active" id="page-home">
+
   <div class="hero">
-    <div class="hero-tag">🎭 Plataforma Artística Nacional</div>
-    <h1>Tu talento merece<br><em>un gran escenario</em></h1>
-    <p>Conectamos artistas de todo el país con clientes que buscan experiencias únicas. Música, danza, humor, teatro, artes plásticas y mucho más.</p>
+    <div class="hero-eyebrow"><span></span> Plataforma Artística Nacional · Costa Rica</div>
+    <h1 class="display">Tu talento merece<br><em>un gran escenario</em></h1>
+    <p class="hero-sub">Conectamos artistas con clientes que buscan experiencias únicas. Música, danza, humor, teatro, artes plásticas y mucho más.</p>
     <div class="hero-btns">
-      <button class="btn btn-primary" onclick="showPage('explore')">Explorar Artistas</button>
-      <button class="btn btn-outline" onclick="showPage('register')">Registrar mi Talento</button>
+      <button class="btn btn-primary btn-lg" onclick="showPage('explore')">Explorar artistas</button>
+      <button class="btn btn-outline btn-lg" onclick="showPage('register')">Registrar mi talento</button>
     </div>
   </div>
 
-  <div class="stats">
-    <div class="stat"><div class="stat-num">1,240+</div><div class="stat-label">Artistas registrados</div></div>
-    <div class="stat"><div class="stat-num">38</div><div class="stat-label">Categorías artísticas</div></div>
-    <div class="stat"><div class="stat-num">3,800+</div><div class="stat-label">Eventos realizados</div></div>
-    <div class="stat"><div class="stat-num">7 provincias</div><div class="stat-label">Cobertura nacional</div></div>
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat"><div class="stat-num" id="stat-artists">—</div><div class="stat-lbl">Artistas registrados</div></div>
+      <div class="stat"><div class="stat-num">38</div><div class="stat-lbl">Categorías artísticas</div></div>
+      <div class="stat"><div class="stat-num" id="stat-bookings">—</div><div class="stat-lbl">Eventos realizados</div></div>
+      <div class="stat"><div class="stat-num">7</div><div class="stat-lbl">Provincias de cobertura</div></div>
+    </div>
   </div>
 
-  <div class="section">
-    <div class="section-title">Explora por Categoría</div>
-    <div class="section-sub">Encuentra el talento perfecto para tu evento</div>
-    <div class="categories">
-      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🎵</span><div class="cat-name">Grupos Musicales</div></div>
-      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">💃</span><div class="cat-name">Grupos de Baile</div></div>
-      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🎭</span><div class="cat-name">Teatro / Sketch</div></div>
-      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🎤</span><div class="cat-name">Stand-Up Comedy</div></div>
-      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🃏</span><div class="cat-name">Magia</div></div>
-      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🤹</span><div class="cat-name">Malabaristas</div></div>
-      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🖌️</span><div class="cat-name">Pintores</div></div>
-      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🗿</span><div class="cat-name">Escultores</div></div>
-      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">😂</span><div class="cat-name">Humoristas</div></div>
-      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🥁</span><div class="cat-name">Percusión</div></div>
-      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">🎪</span><div class="cat-name">Circo</div></div>
-      <div class="cat-card" onclick="showPage('explore')"><span class="cat-icon">✨</span><div class="cat-name">Más...</div></div>
+  <div class="section container">
+    <div class="section-header">
+      <div class="section-title">Explora por categoría</div>
+      <div class="section-sub">Encuentra el talento perfecto para tu evento</div>
     </div>
+    <div class="categories-grid">
+      <div class="cat-item" onclick="filterAndGo('Música')"><div class="cat-icon">🎵</div><div class="cat-label">Grupos Musicales</div></div>
+      <div class="cat-item" onclick="filterAndGo('Danza')"><div class="cat-icon">💃</div><div class="cat-label">Danza</div></div>
+      <div class="cat-item" onclick="filterAndGo('Teatro')"><div class="cat-icon">🎭</div><div class="cat-label">Teatro</div></div>
+      <div class="cat-item" onclick="filterAndGo('Humor')"><div class="cat-icon">🎤</div><div class="cat-label">Stand-Up</div></div>
+      <div class="cat-item" onclick="filterAndGo('Magia')"><div class="cat-icon">🃏</div><div class="cat-label">Magia</div></div>
+      <div class="cat-item" onclick="filterAndGo('Circo')"><div class="cat-icon">🤹</div><div class="cat-label">Malabaristas</div></div>
+      <div class="cat-item" onclick="filterAndGo('Artes Plásticas')"><div class="cat-icon">🖌️</div><div class="cat-label">Artes Plásticas</div></div>
+      <div class="cat-item" onclick="filterAndGo('Percusión')"><div class="cat-icon">🥁</div><div class="cat-label">Percusión</div></div>
+      <div class="cat-item" onclick="filterAndGo('Circo')"><div class="cat-icon">🎪</div><div class="cat-label">Circo</div></div>
+      <div class="cat-item" onclick="filterAndGo('Humor')"><div class="cat-icon">😂</div><div class="cat-label">Humor</div></div>
+      <div class="cat-item" onclick="filterAndGo('Escultura')"><div class="cat-icon">🗿</div><div class="cat-label">Escultura</div></div>
+      <div class="cat-item" onclick="filterAndGo('')"><div class="cat-icon">✨</div><div class="cat-label">Todas</div></div>
+    </div>
+  </div>
+
+  <div class="section container" style="padding-top:0">
+    <div class="section-header">
+      <div class="section-title">Artistas destacados</div>
+      <div class="section-sub">Los más valorados de la plataforma</div>
+    </div>
+    <div class="grid-4" id="featured-grid"></div>
   </div>
 </div>
 
 <!-- ═══════════════ EXPLORAR ═══════════════ -->
 <div class="page" id="page-explore">
-  <div class="section" style="padding-top:2rem">
-    <div class="section-title">Explorar Artistas</div>
-    <div class="section-sub">Descubre talentos disponibles en todo el país</div>
-    <div class="search-bar" style="max-width:100%;padding:0;margin-bottom:1.5rem">
-      <input type="text" placeholder="Buscar por nombre, categoría, ciudad...">
-      <select style="padding:.9rem 1rem;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;">
-        <option>Todas las categorías</option>
-        <option>Música</option>
-        <option>Danza</option>
-        <option>Teatro</option>
-        <option>Humor</option>
-        <option>Artes Plásticas</option>
-      </select>
-      <button class="btn btn-primary">Buscar</button>
+  <div class="container" style="padding-top:40px;padding-bottom:80px">
+    <div class="section-header" style="margin-bottom:24px">
+      <div class="section-title">Explorar artistas</div>
+      <div class="section-sub">Descubre talentos disponibles en todo el país</div>
     </div>
-
-    <div class="artists-grid">
-      <div class="artist-card" onclick="showPage('profile')">
-        <div class="artist-banner" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">🎸</div>
-        <div class="artist-body">
-          <div class="artist-type">Grupo Musical • Rock</div>
-          <div class="artist-name">Los Señores del Viento</div>
-          <div class="artist-desc">Banda de rock fusión con más de 10 años de experiencia. Repertorio amplio, sonido profesional.</div>
-          <div class="artist-footer">
-            <span class="rating">★★★★★ <span style="color:var(--muted)">(48)</span></span>
-            <span class="price-tag">Desde ₡150,000</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="artist-card" onclick="showPage('profile')">
-        <div class="artist-banner" style="background:linear-gradient(135deg,#1a0a2e,#2d1458)">💃</div>
-        <div class="artist-body">
-          <div class="artist-type">Danza • Folclore</div>
-          <div class="artist-name">Compañía Raíces CR</div>
-          <div class="artist-desc">Danza folclórica costarricense auténtica. Ideal para eventos corporativos, festivales y bodas.</div>
-          <div class="artist-footer">
-            <span class="rating">★★★★★ <span style="color:var(--muted)">(72)</span></span>
-            <span class="price-tag">Desde ₡80,000</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="artist-card" onclick="showPage('profile')">
-        <div class="artist-banner" style="background:linear-gradient(135deg,#1a2e0a,#0f3d0a)">🎤</div>
-        <div class="artist-body">
-          <div class="artist-type">Stand-Up Comedy</div>
-          <div class="artist-name">Carlos "El Coyol" Mora</div>
-          <div class="artist-desc">Comediante con material original sobre cotidianidad tica. Shows de 30 a 90 minutos.</div>
-          <div class="artist-footer">
-            <span class="rating">★★★★☆ <span style="color:var(--muted)">(31)</span></span>
-            <span class="price-tag">Desde ₡60,000</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="artist-card" onclick="showPage('profile')">
-        <div class="artist-banner" style="background:linear-gradient(135deg,#2e1a0a,#4a2800)">🤹</div>
-        <div class="artist-body">
-          <div class="artist-type">Malabarismo • Circo</div>
-          <div class="artist-name">Acrobats del Sol</div>
-          <div class="artist-desc">Espectáculo circense completo: malabaristas, acróbatas y payasos. Apto para todo público.</div>
-          <div class="artist-footer">
-            <span class="rating">★★★★★ <span style="color:var(--muted)">(55)</span></span>
-            <span class="price-tag">Desde ₡120,000</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="artist-card" onclick="showPage('profile')">
-        <div class="artist-banner" style="background:linear-gradient(135deg,#2e0a1a,#4a0030)">🖌️</div>
-        <div class="artist-body">
-          <div class="artist-type">Artes Plásticas • Pintura en Vivo</div>
-          <div class="artist-name">Valeria Montoya Arte</div>
-          <div class="artist-desc">Pintura en vivo durante eventos. Retratos, paisajes y obra abstracta. Técnica mixta.</div>
-          <div class="artist-footer">
-            <span class="rating">★★★★☆ <span style="color:var(--muted)">(18)</span></span>
-            <span class="price-tag">Desde ₡45,000</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="artist-card" onclick="showPage('profile')">
-        <div class="artist-banner" style="background:linear-gradient(135deg,#0a2e2e,#00404a)">🎭</div>
-        <div class="artist-body">
-          <div class="artist-type">Teatro • Sketch Cómico</div>
-          <div class="artist-name">Troupe Imaginaria</div>
-          <div class="artist-desc">Grupo de teatro de improvisación y sketches cómicos. Presentaciones interactivas y personalizadas.</div>
-          <div class="artist-footer">
-            <span class="rating">★★★★★ <span style="color:var(--muted)">(40)</span></span>
-            <span class="price-tag">Desde ₡95,000</span>
-          </div>
-        </div>
-      </div>
+    <div class="search-row">
+      <input class="form-control" type="text" id="search-input" placeholder="Buscar por nombre, categoría, descripción...">
+      <select class="form-control" id="search-cat" style="width:200px">
+        <option value="">Todas las categorías</option>
+        <option value="Música">Música</option>
+        <option value="Danza">Danza</option>
+        <option value="Teatro">Teatro</option>
+        <option value="Humor">Humor</option>
+        <option value="Artes Plásticas">Artes Plásticas</option>
+        <option value="Circo">Circo</option>
+        <option value="Magia">Magia</option>
+        <option value="Percusión">Percusión</option>
+        <option value="Escultura">Escultura</option>
+      </select>
+      <button class="btn btn-primary" onclick="doSearch()">Buscar</button>
+    </div>
+    <div id="search-results-label" style="font-size:.8rem;color:var(--ink-3);margin-bottom:16px"></div>
+    <div class="grid-4" id="artists-grid"></div>
+    <div id="explore-empty" class="empty-state" style="display:none">
+      <div class="empty-icon">🎭</div>
+      <p>No se encontraron artistas con esos criterios.<br>Intenta con otros términos.</p>
     </div>
   </div>
 </div>
 
 <!-- ═══════════════ PERFIL ARTISTA ═══════════════ -->
 <div class="page" id="page-profile">
-  <div class="profile-hero">
-    <div class="profile-top">
-      <div class="profile-avatar">🎸</div>
+  <div class="profile-hero-bg">
+    <div class="profile-hero-inner">
+      <div class="avatar" id="profile-avatar">🎸</div>
       <div class="profile-info">
-        <h2>Los Señores del Viento</h2>
-        <div class="profile-badge">Grupo Musical • Rock Fusión</div>
+        <div class="profile-name" id="profile-name">—</div>
+        <div class="profile-type-badge" id="profile-badge">—</div>
         <div class="profile-meta">
-          <span>📍 <strong>San José, CR</strong></span>
-          <span>★ <strong>4.9</strong> (48 reseñas)</span>
-          <span>🎵 <strong>5 integrantes</strong></span>
-          <span>✅ <strong>Verificado</strong></span>
+          <span id="profile-loc">—</span>
+          <span>★ <strong id="profile-rating">—</strong> (<span id="profile-reviews-count">—</span> reseñas)</span>
+          <span id="profile-members">—</span>
+          <span id="profile-verified"></span>
         </div>
-        <div class="profile-actions" style="margin-top:1rem">
-          <button class="btn btn-primary" onclick="showPage('contratar')">Contratar Ahora</button>
-          <button class="btn btn-outline">Ver Demos</button>
-          <button class="btn btn-outline">💬 Mensaje</button>
+        <div class="profile-actions">
+          <button class="btn btn-primary" onclick="goToBooking()">Contratar ahora</button>
+          <button class="btn btn-outline" id="fav-btn" onclick="toggleFavorite()">♡ Favorito</button>
+          <button class="btn btn-outline" onclick="openModal('auth-modal')">💬 Mensaje</button>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="profile-content">
+  <div class="profile-layout">
+    <!-- Main -->
     <div>
-      <div class="profile-section-title">Sobre nosotros</div>
-      <p style="color:var(--muted);line-height:1.7;font-size:.93rem;margin-bottom:1.5rem">
-        Somos una banda de rock fusión costarricense con más de 10 años de experiencia en escenarios nacionales e internacionales. Nuestra propuesta musical mezcla el rock clásico con ritmos latinoamericanos, cumbia y reggae, creando un sonido único y versátil.
-      </p>
+      <div style="font-size:.9rem;color:var(--ink-2);line-height:1.75;margin-bottom:28px" id="profile-about"></div>
 
-      <div class="profile-section-title">Servicios que ofrecemos</div>
-      <div class="services-list">
-        <div class="service-item">
-          <div>
-            <div class="service-name">Show completo (90 min)</div>
-            <div style="font-size:.8rem;color:var(--muted)">3 sets de 30 min, pausa incluida</div>
-          </div>
-          <div class="service-price">₡250,000</div>
-        </div>
-        <div class="service-item">
-          <div>
-            <div class="service-name">Show corto (45 min)</div>
-            <div style="font-size:.8rem;color:var(--muted)">Ideal para cocktails y recepciones</div>
-          </div>
-          <div class="service-price">₡150,000</div>
-        </div>
-        <div class="service-item">
-          <div>
-            <div class="service-name">Música ambiental (acústico)</div>
-            <div style="font-size:.8rem;color:var(--muted)">2 integrantes, formato íntimo</div>
-          </div>
-          <div class="service-price">₡80,000</div>
-        </div>
-      </div>
+      <div style="font-size:.82rem;font-weight:600;color:var(--ink);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">Servicios</div>
+      <div id="profile-services" style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px"></div>
 
-      <div class="profile-section-title">Condiciones y rider técnico</div>
-      <ul class="conditions-list">
-        <li>Escenario mínimo de 4m × 3m</li>
-        <li>Sistema de sonido profesional (PA) con mínimo 1,500W</li>
-        <li>Toma eléctrica de 220V disponible</li>
-        <li>Camerino privado para los 5 integrantes</li>
-        <li>Alimentación para el equipo (shows mayores a 3h)</li>
-        <li>Transporte desde San José incluido hasta 30km</li>
-        <li>50% de adelanto para confirmar la fecha</li>
-        <li>Cancelación con 48h de anticipación sin cargo</li>
-      </ul>
+      <div style="font-size:.82rem;font-weight:600;color:var(--ink);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">Condiciones y rider técnico</div>
+      <ul id="profile-conditions" style="font-size:.85rem;color:var(--ink-2);line-height:2.2;padding-left:0" class="conditions-list-render"></ul>
 
       <div class="divider"></div>
 
-      <div class="profile-section-title">Géneros del repertorio</div>
-      <div class="tag-list" style="margin-bottom:2rem">
-        <span class="tag selected">Rock clásico</span>
-        <span class="tag selected">Rock fusión</span>
-        <span class="tag selected">Cumbia</span>
-        <span class="tag selected">Reggae</span>
-        <span class="tag">Pop en español</span>
-        <span class="tag">Baladas</span>
-        <span class="tag">Latin rock</span>
+      <div style="font-size:.82rem;font-weight:600;color:var(--ink);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)">Géneros del repertorio</div>
+      <div class="chip-list" id="profile-genres" style="margin-bottom:28px"></div>
+
+      <div style="font-size:.82rem;font-weight:600;color:var(--ink);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)">Reseñas</div>
+      <div class="reviews-list" id="profile-reviews-list"></div>
+
+      <!-- Review form -->
+      <div class="card card-padded" style="margin-top:20px" id="review-form-card">
+        <div style="font-size:.875rem;font-weight:600;margin-bottom:14px">Dejar una reseña</div>
+        <div class="form-group">
+          <label>Tu calificación</label>
+          <div id="star-rating" style="display:flex;gap:6px;font-size:1.5rem;cursor:pointer">
+            <span class="star" data-val="1">☆</span><span class="star" data-val="2">☆</span><span class="star" data-val="3">☆</span><span class="star" data-val="4">☆</span><span class="star" data-val="5">☆</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Comentario</label>
+          <textarea class="form-control" id="review-text" placeholder="Cuenta tu experiencia..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="submitReview()">Publicar reseña</button>
+        <div style="font-size:.75rem;color:var(--ink-3);margin-top:8px" id="review-login-note"></div>
       </div>
     </div>
 
     <!-- Sidebar -->
     <div>
-      <div class="sidebar-card">
-        <h4>📅 Disponibilidad — Junio 2025</h4>
-        <div class="calendar-grid">
-          <div class="cal-day header">D</div>
-          <div class="cal-day header">L</div>
-          <div class="cal-day header">M</div>
-          <div class="cal-day header">X</div>
-          <div class="cal-day header">J</div>
-          <div class="cal-day header">V</div>
-          <div class="cal-day header">S</div>
-          <div class="cal-day empty"></div>
-          <div class="cal-day available">2</div>
-          <div class="cal-day available">3</div>
-          <div class="cal-day available">4</div>
-          <div class="cal-day available">5</div>
-          <div class="cal-day booked">6</div>
-          <div class="cal-day booked">7</div>
-          <div class="cal-day available">9</div>
-          <div class="cal-day available">10</div>
-          <div class="cal-day available">11</div>
-          <div class="cal-day booked">12</div>
-          <div class="cal-day available">13</div>
-          <div class="cal-day booked">14</div>
-          <div class="cal-day available">16</div>
-          <div class="cal-day available">17</div>
-          <div class="cal-day available today">18</div>
-          <div class="cal-day available">19</div>
-          <div class="cal-day booked">20</div>
-          <div class="cal-day booked">21</div>
-          <div class="cal-day available">23</div>
-          <div class="cal-day available">24</div>
-          <div class="cal-day available">25</div>
-          <div class="cal-day available">26</div>
-          <div class="cal-day booked">27</div>
-          <div class="cal-day booked">28</div>
-          <div class="cal-day available">30</div>
-        </div>
-        <div class="legend">
-          <span><div class="dot dot-avail"></div> Disponible</span>
-          <span><div class="dot dot-booked"></div> Ocupado</span>
-        </div>
+      <div class="sidebar-widget">
+        <h4>📅 Disponibilidad</h4>
+        <div class="calendar" id="profile-calendar"></div>
       </div>
 
-      <div class="sidebar-card">
+      <div class="sidebar-widget">
         <h4>📞 Contacto rápido</h4>
-        <div style="font-size:.88rem;color:var(--muted);line-height:2">
-          <div>📱 +506 8888-0000</div>
-          <div>✉️ senoresviento@gmail.com</div>
-          <div>🌐 instagram.com/senoresviento</div>
-          <div>📍 San José, Desamparados</div>
-        </div>
-        <button class="btn btn-primary" style="width:100%;margin-top:1rem" onclick="showPage('contratar')">Solicitar Contratación</button>
+        <div id="profile-contact"></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="goToBooking()">Solicitar contratación</button>
       </div>
 
-      <div class="sidebar-card">
+      <div class="sidebar-widget" id="profile-achievements-widget">
         <h4>🏆 Logros</h4>
-        <div style="font-size:.85rem;color:var(--muted);line-height:2">
-          <div>🎵 Festival Nacional 2023</div>
-          <div>🥇 Premio Escena CR 2022</div>
-          <div>🎪 +200 shows realizados</div>
-        </div>
+        <div id="profile-achievements"></div>
       </div>
     </div>
   </div>
@@ -728,33 +641,55 @@
 <!-- ═══════════════ CONTRATAR ═══════════════ -->
 <div class="page" id="page-contratar">
   <div class="form-page">
-    <h2>Solicitar Contratación</h2>
-    <p>Completa el formulario para enviar tu solicitud a <strong class="text-gold">Los Señores del Viento</strong></p>
+    <h2 class="form-page-title">Solicitar contratación</h2>
+    <p class="form-page-sub">Enviando solicitud a <strong id="booking-artist-name" style="color:var(--accent)">—</strong></p>
 
     <div class="step-bar">
-      <div class="step active" id="step1-tab">1. Evento</div>
-      <div class="step" id="step2-tab">2. Detalles</div>
-      <div class="step" id="step3-tab">3. Confirmar</div>
+      <div class="step active" id="bstep1-tab">1. Tu info</div>
+      <div class="step" id="bstep2-tab">2. Evento</div>
+      <div class="step" id="bstep3-tab">3. Confirmar</div>
     </div>
 
     <!-- Step 1 -->
-    <div id="step1">
-      <div class="form-group">
-        <label>Nombre del cliente o empresa</label>
-        <input type="text" placeholder="Ej: Empresa XYZ S.A.">
+    <div id="bstep1">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input class="form-control" type="text" id="b-nombre" placeholder="Tu nombre">
+          <div class="form-error" id="err-b-nombre">Campo requerido</div>
+        </div>
+        <div class="form-group">
+          <label>Apellido *</label>
+          <input class="form-control" type="text" id="b-apellido" placeholder="Tu apellido">
+          <div class="form-error" id="err-b-apellido">Campo requerido</div>
+        </div>
       </div>
       <div class="form-group">
-        <label>Correo electrónico</label>
-        <input type="email" placeholder="correo@ejemplo.com">
+        <label>Correo electrónico *</label>
+        <input class="form-control" type="email" id="b-email" placeholder="correo@ejemplo.com">
+        <div class="form-error" id="err-b-email">Ingresa un correo válido</div>
       </div>
       <div class="form-group">
-        <label>Teléfono de contacto</label>
-        <input type="tel" placeholder="+506 8000-0000">
+        <label>Teléfono *</label>
+        <input class="form-control" type="tel" id="b-tel" placeholder="+506 8000-0000">
+        <div class="form-error" id="err-b-tel">Campo requerido</div>
       </div>
       <div class="form-group">
-        <label>Tipo de evento</label>
-        <select>
-          <option>Seleccionar...</option>
+        <label>Empresa / Organización (opcional)</label>
+        <input class="form-control" type="text" id="b-empresa" placeholder="Ej: Empresa XYZ S.A.">
+      </div>
+      <div class="form-nav">
+        <button class="btn btn-outline" onclick="showPage('profile')">← Regresar</button>
+        <button class="btn btn-primary" onclick="goBookingStep(2)">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="bstep2" style="display:none">
+      <div class="form-group">
+        <label>Tipo de evento *</label>
+        <select class="form-control" id="b-tipo">
+          <option value="">Seleccionar...</option>
           <option>Boda / Celebración</option>
           <option>Evento corporativo</option>
           <option>Festival</option>
@@ -762,182 +697,232 @@
           <option>Concierto privado</option>
           <option>Otro</option>
         </select>
+        <div class="form-error" id="err-b-tipo">Selecciona un tipo de evento</div>
       </div>
-      <div class="form-nav">
-        <button class="btn btn-outline" onclick="showPage('profile')">← Regresar</button>
-        <button class="btn btn-primary" onclick="goStep(2)">Siguiente →</button>
-      </div>
-    </div>
-
-    <!-- Step 2 -->
-    <div id="step2" style="display:none">
       <div class="form-row">
         <div class="form-group">
-          <label>Fecha del evento</label>
-          <input type="date">
+          <label>Fecha del evento *</label>
+          <input class="form-control" type="date" id="b-fecha">
+          <div class="form-error" id="err-b-fecha">Selecciona una fecha</div>
         </div>
         <div class="form-group">
           <label>Hora de inicio</label>
-          <input type="time">
+          <input class="form-control" type="time" id="b-hora" value="18:00">
         </div>
       </div>
       <div class="form-group">
-        <label>Lugar del evento</label>
-        <input type="text" placeholder="Dirección completa o nombre del local">
+        <label>Lugar del evento *</label>
+        <input class="form-control" type="text" id="b-lugar" placeholder="Dirección completa o nombre del local">
+        <div class="form-error" id="err-b-lugar">Campo requerido</div>
       </div>
       <div class="form-group">
-        <label>Servicio solicitado</label>
-        <select>
-          <option>Show completo (90 min) — ₡250,000</option>
-          <option>Show corto (45 min) — ₡150,000</option>
-          <option>Música ambiental acústica — ₡80,000</option>
+        <label>Servicio solicitado *</label>
+        <select class="form-control" id="b-servicio">
+          <option value="">Seleccionar...</option>
         </select>
+        <div class="form-error" id="err-b-servicio">Selecciona un servicio</div>
       </div>
       <div class="form-group">
-        <label>Notas adicionales o solicitudes especiales</label>
-        <textarea placeholder="Ej: Canciones específicas, requisitos especiales, número de personas esperadas..."></textarea>
+        <label>Notas adicionales</label>
+        <textarea class="form-control" id="b-notas" placeholder="Canciones específicas, requisitos especiales, número de personas..."></textarea>
       </div>
       <div class="form-nav">
-        <button class="btn btn-outline" onclick="goStep(1)">← Anterior</button>
-        <button class="btn btn-primary" onclick="goStep(3)">Revisar →</button>
+        <button class="btn btn-outline" onclick="goBookingStep(1)">← Anterior</button>
+        <button class="btn btn-primary" onclick="goBookingStep(3)">Revisar solicitud →</button>
       </div>
     </div>
 
     <!-- Step 3 -->
-    <div id="step3" style="display:none">
-      <div class="sidebar-card">
-        <h4>Resumen de la Solicitud</h4>
-        <div style="font-size:.88rem;line-height:2.2;color:var(--muted)">
-          <div>🎸 <strong style="color:var(--text)">Artista:</strong> Los Señores del Viento</div>
-          <div>📅 <strong style="color:var(--text)">Fecha:</strong> Sábado 21 de junio, 2025</div>
-          <div>⏰ <strong style="color:var(--text)">Hora:</strong> 7:00 PM</div>
-          <div>📍 <strong style="color:var(--text)">Lugar:</strong> Hotel El Patio, San José</div>
-          <div>🎵 <strong style="color:var(--text)">Servicio:</strong> Show completo (90 min)</div>
-          <div>💰 <strong style="color:var(--text)">Monto total:</strong> <span class="text-gold">₡250,000</span></div>
-          <div>💳 <strong style="color:var(--text)">Adelanto (50%):</strong> <span class="text-gold">₡125,000</span></div>
-        </div>
-        <div class="divider"></div>
-        <div style="font-size:.8rem;color:var(--muted);line-height:1.6">
-          Al enviar esta solicitud, el artista recibirá una notificación y tendrá 24 horas para aceptar o proponer ajustes. Recibirás un correo de confirmación con los próximos pasos.
-        </div>
-      </div>
-      <div class="form-nav">
-        <button class="btn btn-outline" onclick="goStep(2)">← Anterior</button>
-        <button class="btn btn-accent" onclick="goStep('success')">✓ Enviar Solicitud</button>
+    <div id="bstep3" style="display:none">
+      <div class="summary-card" id="booking-summary"></div>
+      <div class="terms-note">Al enviar esta solicitud, el artista recibirá una notificación y tendrá 24 horas para aceptar o proponer ajustes. Recibirás una confirmación con los próximos pasos.</div>
+      <div class="form-nav" style="margin-top:20px">
+        <button class="btn btn-outline" onclick="goBookingStep(2)">← Anterior</button>
+        <button class="btn btn-warm" onclick="submitBooking()">✓ Enviar solicitud</button>
       </div>
     </div>
 
     <!-- Success -->
-    <div id="step-success" style="display:none">
+    <div id="bstep-success" style="display:none">
       <div class="success-box">
-        <div class="success-icon">🎉</div>
-        <h3>¡Solicitud Enviada!</h3>
-        <p>Los Señores del Viento recibirán tu solicitud y te responderán en máximo 24 horas. Revisa tu correo electrónico.</p>
-        <button class="btn btn-primary" onclick="showPage('explore')">Explorar más artistas</button>
+        <div class="success-icon">✓</div>
+        <div class="success-title">¡Solicitud enviada!</div>
+        <div class="success-sub">El artista recibirá tu solicitud y te responderá en máximo 24 horas. Revisa tu correo electrónico.</div>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="showPage('explore')">Explorar más artistas</button>
+          <button class="btn btn-outline" onclick="showPage('home')">Ir al inicio</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════ DASHBOARD ARTISTA ═══════════════ -->
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
 <div class="page" id="page-dashboard">
   <div class="dash-layout">
+    <!-- Sidebar -->
     <div class="dash-sidebar">
-      <div style="margin-bottom:1.5rem;padding:.5rem 1rem">
-        <div style="font-size:.75rem;color:var(--muted);margin-bottom:.3rem">Sesión como artista</div>
-        <div style="font-weight:600">Los Señores del Viento</div>
-        <div style="font-size:.8rem;color:var(--gold)">★ 4.9 • Verificado</div>
+      <div class="dash-profile">
+        <div class="dash-profile-name" id="dash-artist-name">—</div>
+        <div class="dash-profile-sub" id="dash-artist-sub">★ — · Artista verificado</div>
       </div>
-      <div class="dash-nav-item active">📊 Resumen</div>
-      <div class="dash-nav-item">📅 Agenda</div>
-      <div class="dash-nav-item">📋 Solicitudes</div>
-      <div class="dash-nav-item">💼 Mis Servicios</div>
-      <div class="dash-nav-item">💬 Mensajes <span style="background:var(--accent);border-radius:999px;padding:.1rem .5rem;font-size:.7rem;margin-left:.4rem">3</span></div>
-      <div class="dash-nav-item">⭐ Reseñas</div>
-      <div class="dash-nav-item">👤 Mi Perfil</div>
-      <div style="margin-top:auto;padding-top:2rem">
-        <div class="dash-nav-item">⚙️ Configuración</div>
+      <div class="dash-nav-item active" onclick="switchDashPanel('resumen')"><span class="icon">📊</span>Resumen</div>
+      <div class="dash-nav-item" onclick="switchDashPanel('agenda')"><span class="icon">📅</span>Agenda</div>
+      <div class="dash-nav-item" onclick="switchDashPanel('solicitudes')"><span class="icon">📋</span>Solicitudes</div>
+      <div class="dash-nav-item" onclick="switchDashPanel('servicios')"><span class="icon">💼</span>Mis servicios</div>
+      <div class="dash-nav-item" onclick="switchDashPanel('mensajes')"><span class="icon">💬</span>Mensajes <span class="dash-badge" id="unread-badge" style="display:none">0</span></div>
+      <div class="dash-nav-item" onclick="switchDashPanel('reseñas')"><span class="icon">⭐</span>Reseñas</div>
+      <div class="dash-nav-item" onclick="switchDashPanel('perfil')"><span class="icon">👤</span>Mi perfil</div>
+      <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border)">
+        <div class="dash-nav-item" onclick="handleLogout()"><span class="icon">↩</span>Cerrar sesión</div>
       </div>
     </div>
 
+    <!-- Content -->
     <div class="dash-content">
-      <div class="dash-title">Panel del Artista</div>
-
-      <div class="kpis">
-        <div class="kpi-card">
-          <div class="kpi-label">Solicitudes este mes</div>
-          <div class="kpi-val">12</div>
-          <div class="kpi-change">↑ +3 vs mes anterior</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Shows confirmados</div>
-          <div class="kpi-val">7</div>
-          <div class="kpi-change">↑ +2 vs mes anterior</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Ingresos del mes</div>
-          <div class="kpi-val">₡1.2M</div>
-          <div class="kpi-change">↑ +15%</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Visitas al perfil</div>
-          <div class="kpi-val">284</div>
-          <div class="kpi-change">↑ +42</div>
+      <!-- RESUMEN -->
+      <div class="dash-panel active" id="panel-resumen">
+        <div class="dash-title">Panel del artista</div>
+        <div class="kpis" id="dash-kpis"></div>
+        <div class="dash-section-title">Solicitudes recientes</div>
+        <div class="table-wrap">
+          <table class="data-table" id="dash-requests-table">
+            <thead><tr><th>Cliente</th><th>Evento</th><th>Fecha</th><th>Servicio</th><th>Monto</th><th>Estado</th><th></th></tr></thead>
+            <tbody id="dash-requests-body"></tbody>
+          </table>
         </div>
       </div>
 
-      <div class="profile-section-title">Solicitudes recientes</div>
-      <table class="requests-table">
-        <thead>
-          <tr>
-            <th>Cliente</th>
-            <th>Evento</th>
-            <th>Fecha</th>
-            <th>Servicio</th>
-            <th>Monto</th>
-            <th>Estado</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>María Rodríguez</strong><br><span style="font-size:.78rem;color:var(--muted)">Boda privada</span></td>
-            <td>Boda</td>
-            <td>21 Jun 2025</td>
-            <td>Show completo</td>
-            <td class="text-gold">₡250,000</td>
-            <td><span class="status-badge status-pending">Pendiente</span></td>
-            <td><button class="btn btn-primary" style="padding:.4rem .8rem;font-size:.8rem">Revisar</button></td>
-          </tr>
-          <tr>
-            <td><strong>Corp. Tech S.A.</strong><br><span style="font-size:.78rem;color:var(--muted)">Evento corp.</span></td>
-            <td>Corporativo</td>
-            <td>28 Jun 2025</td>
-            <td>Show corto</td>
-            <td class="text-gold">₡150,000</td>
-            <td><span class="status-badge status-confirmed">Confirmado</span></td>
-            <td><button class="btn btn-outline" style="padding:.4rem .8rem;font-size:.8rem">Ver</button></td>
-          </tr>
-          <tr>
-            <td><strong>Pedro Jiménez</strong><br><span style="font-size:.78rem;color:var(--muted)">Quinceañera</span></td>
-            <td>Celebración</td>
-            <td>14 Jun 2025</td>
-            <td>Show completo</td>
-            <td class="text-gold">₡250,000</td>
-            <td><span class="status-badge status-done">Realizado</span></td>
-            <td><button class="btn btn-outline" style="padding:.4rem .8rem;font-size:.8rem">Ver</button></td>
-          </tr>
-          <tr>
-            <td><strong>Festival Cultura</strong><br><span style="font-size:.78rem;color:var(--muted)">Festival público</span></td>
-            <td>Festival</td>
-            <td>7 Jun 2025</td>
-            <td>Show completo</td>
-            <td class="text-gold">₡250,000</td>
-            <td><span class="status-badge status-done">Realizado</span></td>
-            <td><button class="btn btn-outline" style="padding:.4rem .8rem;font-size:.8rem">Ver</button></td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- AGENDA -->
+      <div class="dash-panel" id="panel-agenda">
+        <div class="dash-title">Agenda</div>
+        <div class="card card-padded">
+          <div class="cal-nav">
+            <button class="cal-nav-btn" onclick="dashCalPrev()">‹</button>
+            <div class="cal-month" id="dash-cal-month">—</div>
+            <button class="cal-nav-btn" onclick="dashCalNext()">›</button>
+          </div>
+          <div class="cal-grid" id="dash-cal-grid"></div>
+          <div class="cal-legend" style="margin-top:12px">
+            <span><div class="dot" style="background:var(--accent)"></div>Disponible</span>
+            <span><div class="dot" style="background:var(--warm)"></div>Ocupado</span>
+          </div>
+        </div>
+        <div class="dash-section-title" style="margin-top:24px">Eventos confirmados</div>
+        <div id="dash-agenda-list"></div>
+      </div>
+
+      <!-- SOLICITUDES -->
+      <div class="dash-panel" id="panel-solicitudes">
+        <div class="dash-title">Todas las solicitudes</div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Cliente</th><th>Evento</th><th>Fecha</th><th>Servicio</th><th>Monto</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="all-requests-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SERVICIOS -->
+      <div class="dash-panel" id="panel-servicios">
+        <div class="dash-title">Mis servicios</div>
+        <div id="dash-services-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px"></div>
+        <div class="card card-padded">
+          <div style="font-size:.875rem;font-weight:600;margin-bottom:16px">Agregar servicio</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre del servicio</label>
+              <input class="form-control" type="text" id="svc-name" placeholder="Ej: Show completo (90 min)">
+            </div>
+            <div class="form-group">
+              <label>Precio (₡)</label>
+              <input class="form-control" type="number" id="svc-price" placeholder="250000">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Descripción breve</label>
+            <input class="form-control" type="text" id="svc-desc" placeholder="Detalle adicional...">
+          </div>
+          <button class="btn btn-primary" onclick="addService()">Agregar servicio</button>
+        </div>
+      </div>
+
+      <!-- MENSAJES -->
+      <div class="dash-panel" id="panel-mensajes">
+        <div class="dash-title">Mensajes</div>
+        <div class="card" style="overflow:hidden">
+          <div class="msg-list" id="dash-messages-list"></div>
+        </div>
+        <div class="card card-padded" style="margin-top:16px">
+          <div style="font-size:.875rem;font-weight:600;margin-bottom:14px">Enviar mensaje</div>
+          <div class="form-group">
+            <label>Para (nombre)</label>
+            <input class="form-control" type="text" id="msg-to" placeholder="Nombre del cliente o artista">
+          </div>
+          <div class="form-group">
+            <label>Mensaje</label>
+            <textarea class="form-control" id="msg-body" placeholder="Escribe tu mensaje..."></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="sendMessage()">Enviar</button>
+        </div>
+      </div>
+
+      <!-- RESEÑAS -->
+      <div class="dash-panel" id="panel-reseñas">
+        <div class="dash-title">Reseñas</div>
+        <div id="dash-reviews-list" style="display:flex;flex-direction:column;gap:12px"></div>
+      </div>
+
+      <!-- PERFIL -->
+      <div class="dash-panel" id="panel-perfil">
+        <div class="dash-title">Mi perfil</div>
+        <div class="card card-padded">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre artístico</label>
+              <input class="form-control" type="text" id="dp-nombre" placeholder="Tu nombre artístico">
+            </div>
+            <div class="form-group">
+              <label>Número de integrantes</label>
+              <input class="form-control" type="number" id="dp-integrantes" min="1">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Categoría artística</label>
+            <select class="form-control" id="dp-categoria">
+              <option>Música</option><option>Danza</option><option>Teatro</option>
+              <option>Humor</option><option>Artes Plásticas</option><option>Circo</option>
+              <option>Magia</option><option>Percusión</option><option>Escultura</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Provincia</label>
+            <select class="form-control" id="dp-provincia">
+              <option>San José</option><option>Alajuela</option><option>Cartago</option>
+              <option>Heredia</option><option>Guanacaste</option><option>Puntarenas</option><option>Limón</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea class="form-control" id="dp-desc"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Correo electrónico</label>
+              <input class="form-control" type="email" id="dp-email">
+            </div>
+            <div class="form-group">
+              <label>Teléfono</label>
+              <input class="form-control" type="tel" id="dp-tel">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Instagram / web</label>
+            <input class="form-control" type="text" id="dp-web" placeholder="instagram.com/tuusuario">
+          </div>
+          <button class="btn btn-primary" onclick="saveProfile()">Guardar cambios</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -945,122 +930,1100 @@
 <!-- ═══════════════ REGISTRO ARTISTA ═══════════════ -->
 <div class="page" id="page-register">
   <div class="form-page">
-    <h2>Registra tu Talento</h2>
-    <p>Crea tu perfil y empieza a recibir solicitudes de contratación de todo el país</p>
+    <h2 class="form-page-title">Registra tu talento</h2>
+    <p class="form-page-sub">Crea tu perfil y empieza a recibir solicitudes de todo el país</p>
 
-    <div class="reg-tabs">
-      <div class="reg-tab active">Información Básica</div>
-      <div class="reg-tab">Servicios</div>
-      <div class="reg-tab">Condiciones</div>
-    </div>
-
-    <div class="form-group">
-      <label>Nombre artístico / Nombre del grupo</label>
-      <input type="text" placeholder="Ej: Los Señores del Viento">
-    </div>
-    <div class="form-group">
-      <label>Categoría artística principal</label>
-      <select>
-        <option>Seleccionar...</option>
-        <option>Grupo Musical</option>
-        <option>Danza / Baile</option>
-        <option>Teatro / Sketch</option>
-        <option>Stand-Up Comedy</option>
-        <option>Humorista</option>
-        <option>Malabarismo / Circo</option>
-        <option>Magia</option>
-        <option>Pintura en Vivo</option>
-        <option>Escultura</option>
-        <option>Otro</option>
-      </select>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Provincia</label>
-        <select>
-          <option>San José</option>
-          <option>Alajuela</option>
-          <option>Cartago</option>
-          <option>Heredia</option>
-          <option>Guanacaste</option>
-          <option>Puntarenas</option>
-          <option>Limón</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Número de integrantes</label>
-        <input type="number" placeholder="1" min="1">
-      </div>
-    </div>
-    <div class="form-group">
-      <label>Descripción del artista / grupo</label>
-      <textarea placeholder="Describe tu propuesta artística, experiencia y lo que te hace especial..."></textarea>
-    </div>
-    <div class="form-group">
-      <label>Géneros / Estilos (selecciona los que apliquen)</label>
-      <div class="tag-list mt1">
-        <span class="tag" onclick="this.classList.toggle('selected')">Rock</span>
-        <span class="tag" onclick="this.classList.toggle('selected')">Pop</span>
-        <span class="tag" onclick="this.classList.toggle('selected')">Cumbia</span>
-        <span class="tag" onclick="this.classList.toggle('selected')">Reggae</span>
-        <span class="tag" onclick="this.classList.toggle('selected')">Folclore</span>
-        <span class="tag" onclick="this.classList.toggle('selected')">Jazz</span>
-        <span class="tag" onclick="this.classList.toggle('selected')">Clásico</span>
-        <span class="tag" onclick="this.classList.toggle('selected')">Tropical</span>
-        <span class="tag" onclick="this.classList.toggle('selected')">Balada</span>
-        <span class="tag" onclick="this.classList.toggle('selected')">Electrónico</span>
-        <span class="tag" onclick="this.classList.toggle('selected')">Humor</span>
-        <span class="tag" onclick="this.classList.toggle('selected')">Infantil</span>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Correo electrónico</label>
-        <input type="email" placeholder="artista@correo.com">
-      </div>
-      <div class="form-group">
-        <label>Teléfono</label>
-        <input type="tel" placeholder="+506 8000-0000">
-      </div>
-    </div>
-    <div class="form-group">
-      <label>Precio base del servicio (₡)</label>
-      <input type="number" placeholder="50000">
+    <div class="reg-tabs" id="reg-tabs">
+      <div class="reg-tab active" onclick="switchRegTab(0)">Información básica</div>
+      <div class="reg-tab" onclick="switchRegTab(1)">Servicios</div>
+      <div class="reg-tab" onclick="switchRegTab(2)">Condiciones</div>
     </div>
 
-    <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:1rem">
-      <button class="btn btn-outline" onclick="showPage('home')">Cancelar</button>
-      <button class="btn btn-primary" onclick="showPage('dashboard')">Crear Perfil →</button>
+    <!-- Tab 0: Info básica -->
+    <div id="reg-tab-0">
+      <div class="form-group">
+        <label>Nombre artístico / Nombre del grupo *</label>
+        <input class="form-control" type="text" id="r-nombre" placeholder="Ej: Los Señores del Viento">
+        <div class="form-error" id="err-r-nombre">Campo requerido</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Categoría artística *</label>
+          <select class="form-control" id="r-categoria">
+            <option value="">Seleccionar...</option>
+            <option>Música</option><option>Danza</option><option>Teatro</option>
+            <option>Humor</option><option>Artes Plásticas</option><option>Circo</option>
+            <option>Magia</option><option>Percusión</option><option>Escultura</option><option>Otro</option>
+          </select>
+          <div class="form-error" id="err-r-categoria">Selecciona una categoría</div>
+        </div>
+        <div class="form-group">
+          <label>Provincia *</label>
+          <select class="form-control" id="r-provincia">
+            <option value="">Seleccionar...</option>
+            <option>San José</option><option>Alajuela</option><option>Cartago</option>
+            <option>Heredia</option><option>Guanacaste</option><option>Puntarenas</option><option>Limón</option>
+          </select>
+          <div class="form-error" id="err-r-provincia">Selecciona una provincia</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Número de integrantes</label>
+          <input class="form-control" type="number" id="r-integrantes" placeholder="1" min="1" value="1">
+        </div>
+        <div class="form-group">
+          <label>Precio base (₡) *</label>
+          <input class="form-control" type="number" id="r-precio" placeholder="50000">
+          <div class="form-error" id="err-r-precio">Ingresa un precio base</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Descripción *</label>
+        <textarea class="form-control" id="r-desc" placeholder="Describe tu propuesta artística, experiencia y lo que te hace especial..."></textarea>
+        <div class="form-error" id="err-r-desc">Campo requerido</div>
+      </div>
+      <div class="form-group">
+        <label>Géneros / estilos</label>
+        <div class="chip-list" id="genre-chips">
+          <span class="chip" onclick="this.classList.toggle('selected')">Rock</span>
+          <span class="chip" onclick="this.classList.toggle('selected')">Pop</span>
+          <span class="chip" onclick="this.classList.toggle('selected')">Cumbia</span>
+          <span class="chip" onclick="this.classList.toggle('selected')">Reggae</span>
+          <span class="chip" onclick="this.classList.toggle('selected')">Folclore</span>
+          <span class="chip" onclick="this.classList.toggle('selected')">Jazz</span>
+          <span class="chip" onclick="this.classList.toggle('selected')">Clásico</span>
+          <span class="chip" onclick="this.classList.toggle('selected')">Tropical</span>
+          <span class="chip" onclick="this.classList.toggle('selected')">Balada</span>
+          <span class="chip" onclick="this.classList.toggle('selected')">Electrónico</span>
+          <span class="chip" onclick="this.classList.toggle('selected')">Humor</span>
+          <span class="chip" onclick="this.classList.toggle('selected')">Infantil</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Correo electrónico *</label>
+          <input class="form-control" type="email" id="r-email" placeholder="artista@correo.com">
+          <div class="form-error" id="err-r-email">Ingresa un correo válido</div>
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input class="form-control" type="tel" id="r-tel" placeholder="+506 8000-0000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Contraseña para tu cuenta *</label>
+        <input class="form-control" type="password" id="r-pass" placeholder="Mínimo 6 caracteres">
+        <div class="form-error" id="err-r-pass">Mínimo 6 caracteres</div>
+      </div>
+    </div>
+
+    <!-- Tab 1: Servicios -->
+    <div id="reg-tab-1" style="display:none">
+      <p style="color:var(--ink-2);font-size:.875rem;margin-bottom:20px">Agrega los servicios que ofrecerás. Puedes agregar más desde tu panel luego.</p>
+      <div id="reg-services" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px"></div>
+      <div class="card card-padded">
+        <div class="form-row">
+          <div class="form-group"><label>Nombre del servicio</label><input class="form-control" type="text" id="rs-name" placeholder="Ej: Show completo (90 min)"></div>
+          <div class="form-group"><label>Precio (₡)</label><input class="form-control" type="number" id="rs-price" placeholder="150000"></div>
+        </div>
+        <div class="form-group"><label>Descripción breve</label><input class="form-control" type="text" id="rs-desc" placeholder="Detalle del servicio..."></div>
+        <button class="btn btn-outline btn-sm" onclick="addRegService()">+ Agregar servicio</button>
+      </div>
+    </div>
+
+    <!-- Tab 2: Condiciones -->
+    <div id="reg-tab-2" style="display:none">
+      <p style="color:var(--ink-2);font-size:.875rem;margin-bottom:20px">Especifica tus condiciones técnicas y contractuales.</p>
+      <div id="reg-conditions" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px"></div>
+      <div style="display:flex;gap:10px">
+        <input class="form-control" type="text" id="cond-input" placeholder="Ej: Escenario mínimo 4m × 3m" style="flex:1">
+        <button class="btn btn-outline" onclick="addRegCondition()">+ Agregar</button>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:28px">
+      <button class="btn btn-ghost" onclick="showPage('home')">Cancelar</button>
+      <button class="btn btn-primary" onclick="submitArtistRegister()">Crear perfil →</button>
     </div>
   </div>
 </div>
 
 <script>
-  function showPage(name) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
-    window.scrollTo(0, 0);
+/* ═══════════════════════════════════
+   STATE & STORAGE
+═══════════════════════════════════ */
+const DB = {
+  get(key, def=null) { try { const v=localStorage.getItem('artescena_'+key); return v?JSON.parse(v):def; } catch{ return def; } },
+  set(key,val) { try { localStorage.setItem('artescena_'+key, JSON.stringify(val)); } catch{} },
+};
+
+// Seed default artists if none
+const DEFAULT_ARTISTS = [
+  {
+    id:'a1', name:'Los Señores del Viento', icon:'🎸', category:'Música', subcategory:'Rock Fusión',
+    province:'San José', district:'Desamparados', members:5, verified:true,
+    rating:4.9, reviewCount:48, basePrice:150000,
+    bannerGradient:'linear-gradient(135deg,#e8f4f0,#d4ebe3)',
+    about:'Somos una banda de rock fusión costarricense con más de 10 años de experiencia en escenarios nacionales e internacionales. Nuestra propuesta musical mezcla el rock clásico con ritmos latinoamericanos, cumbia y reggae, creando un sonido único y versátil.',
+    services:[
+      {name:'Show completo (90 min)',desc:'3 sets de 30 min, pausa incluida',price:250000},
+      {name:'Show corto (45 min)',desc:'Ideal para cocktails y recepciones',price:150000},
+      {name:'Música ambiental (acústico)',desc:'2 integrantes, formato íntimo',price:80000},
+    ],
+    conditions:['Escenario mínimo de 4m × 3m','Sistema de sonido profesional (PA) 1,500W+','Toma eléctrica de 220V','Camerino privado','Alimentación para el equipo (shows >3h)','Transporte desde San José hasta 30km','50% de adelanto para confirmar','Cancelación con 48h sin cargo'],
+    genres:['Rock clásico','Rock fusión','Cumbia','Reggae'],
+    contact:{phone:'+506 8888-0000',email:'senoresviento@gmail.com',web:'instagram.com/senoresviento'},
+    achievements:['🎵 Festival Nacional 2023','🥇 Premio Escena CR 2022','🎪 +200 shows realizados'],
+    reviews:[
+      {author:'María R.', rating:5, text:'Increíble presentación en nuestra boda. Todos bailaron toda la noche.', date:'2025-05-10'},
+      {author:'Carlos M.', rating:5, text:'Profesionales y muy puntuales. El repertorio fue perfecto para el evento.', date:'2025-04-22'},
+    ]
+  },
+  {
+    id:'a2', name:'Compañía Raíces CR', icon:'💃', category:'Danza', subcategory:'Folclore',
+    province:'Heredia', district:'Barva', members:12, verified:true,
+    rating:4.8, reviewCount:72, basePrice:80000,
+    bannerGradient:'linear-gradient(135deg,#f5eef8,#e8d5f0)',
+    about:'Danza folclórica costarricense auténtica. Transmitimos la riqueza cultural de nuestro país a través del movimiento. Ideal para eventos corporativos, festivales y bodas donde se busca un toque cultural.',
+    services:[
+      {name:'Presentación completa (45 min)',desc:'Gala completa con vestuario tradicional',price:180000},
+      {name:'Muestra folclórica (20 min)',desc:'Selección de las danzas más representativas',price:90000},
+      {name:'Show infantil',desc:'Talleres y demostración interactiva',price:70000},
+    ],
+    conditions:['Piso limpio y nivelado (al menos 5m × 5m)','Vestuarios separados para hombres y mujeres','Sistema de audio con entrada auxiliar','Iluminación básica del escenario','Contrato firmado con 2 semanas de anticipación'],
+    genres:['Folclore','Danza típica','Cumbia','Punta'],
+    contact:{phone:'+506 7777-1234',email:'raicescr@gmail.com',web:'instagram.com/raicescr'},
+    achievements:['🌺 Ganadores FECUMPAZ 2024','🎭 Gira Centroamérica 2023','🏆 Premio Cultura Viva 2022'],
+    reviews:[
+      {author:'Andrea L.', rating:5, text:'Extraordinario. Los invitados quedaron encantados con la presentación folclórica.', date:'2025-05-18'},
+      {author:'Empresa TechCR', rating:5, text:'Contratamos para nuestro evento corporativo. Muy profesionales y puntuales.', date:'2025-03-05'},
+    ]
+  },
+  {
+    id:'a3', name:'Carlos "El Coyol" Mora', icon:'🎤', category:'Humor', subcategory:'Stand-Up Comedy',
+    province:'San José', district:'Escazú', members:1, verified:false,
+    rating:4.4, reviewCount:31, basePrice:60000,
+    bannerGradient:'linear-gradient(135deg,#eaf4e8,#d5edd3)',
+    about:'Comediante con material original sobre cotidianidad tica. Shows adaptados al tipo de audiencia. Humor limpio, familiar o para adultos según el evento. Más de 5 años haciendo reír a los ticos.',
+    services:[
+      {name:'Show completo (60 min)',desc:'Monólogo completo con bis incluido',price:120000},
+      {name:'Show corto (30 min)',desc:'Ideal como apertura de evento',price:70000},
+      {name:'Conducción de evento',desc:'Animación y conducción por horas',price:60000},
+    ],
+    conditions:['Micrófono inalámbrico','Área tranquila sin mucho ruido ambiental','Material personalizable con anticipación de 1 semana','Pago total previo al show'],
+    genres:['Stand-Up','Humor blanco','Humor adulto','Improvisación'],
+    contact:{phone:'+506 8600-9900',email:'coyolmora@gmail.com',web:'instagram.com/elcoyolmora'},
+    achievements:['😂 Festival Risa CR 2024','🎤 +100 shows realizados'],
+    reviews:[
+      {author:'Empresa ABC', rating:4, text:'Muy chistoso, perfecto para nuestro evento de fin de año.', date:'2025-04-01'},
+    ]
+  },
+  {
+    id:'a4', name:'Acrobats del Sol', icon:'🤹', category:'Circo', subcategory:'Malabarismo y Acrobacia',
+    province:'Alajuela', district:'Ciudad Quesada', members:8, verified:true,
+    rating:4.9, reviewCount:55, basePrice:120000,
+    bannerGradient:'linear-gradient(135deg,#fdf3e8,#f5e5cf)',
+    about:'Espectáculo circense completo: malabaristas, acróbatas y payasos. Apto para todo público, especialmente familias y eventos con niños. Más de 8 años entreteniendo en ferias y festivales nacionales.',
+    services:[
+      {name:'Show circense completo (60 min)',desc:'Acrobacia, malabares, payasos y más',price:280000},
+      {name:'Show infantil (40 min)',desc:'Enfocado en interacción con niños',price:160000},
+      {name:'Artista de calle (por hora)',desc:'Ambientación en ferias y mercados',price:45000},
+    ],
+    conditions:['Espacio abierto o techado mínimo 6m × 6m','Altura libre de 5m para números aéreos','Acceso a corriente eléctrica','Estacionamiento para 2 vehículos','Contrato firmado con 3 semanas de anticipación'],
+    genres:['Circo','Malabares','Acrobacia','Payasos'],
+    contact:{phone:'+506 8200-4400',email:'acrobatsdelsol@gmail.com',web:'instagram.com/acrobatsdelsol'},
+    achievements:['🎪 Festival Cultura 2024','🏅 Premio Familia CR 2023','🎡 +500 presentaciones'],
+    reviews:[
+      {author:'Colegio San Pablo', rating:5, text:'Los niños quedaron fascinados. Los mejores del país sin duda.', date:'2025-04-15'},
+      {author:'Feria de Alajuela', rating:5, text:'Llenaron el espacio de energía y alegría. Contratados de nuevo el próximo año.', date:'2025-02-20'},
+    ]
+  },
+  {
+    id:'a5', name:'Valeria Montoya Arte', icon:'🖌️', category:'Artes Plásticas', subcategory:'Pintura en Vivo',
+    province:'Cartago', district:'Turrialba', members:1, verified:false,
+    rating:4.3, reviewCount:18, basePrice:45000,
+    bannerGradient:'linear-gradient(135deg,#fceaf0,#f5d5e2)',
+    about:'Pintura en vivo durante eventos. Retratos, paisajes y obra abstracta. Técnica mixta que va desde acuarela hasta acrílico. El cuadro resultante queda como recuerdo del evento para el cliente.',
+    services:[
+      {name:'Pintura en vivo (3h)',desc:'Obra completa durante el evento',price:95000},
+      {name:'Retrato en vivo (1h)',desc:'Retrato de pareja o familia',price:55000},
+      {name:'Mural express',desc:'Mural pequeño hasta 1m×1m',price:45000},
+    ],
+    conditions:['Mesa o caballete con espacio de 2m×2m','Iluminación adecuada','La obra quedará en posesión del cliente al finalizar'],
+    genres:['Pintura','Acuarela','Acrílico','Arte abstracto'],
+    contact:{phone:'+506 8900-2233',email:'valeriamontoyaarte@gmail.com',web:'instagram.com/valeriamontoya.art'},
+    achievements:['🖼️ Exposición Galería Nacional 2024','🎨 Premio Arte Joven 2022'],
+    reviews:[
+      {author:'Bodas Rodríguez', rating:4, text:'La pintura quedó hermosa y ahora está en nuestra sala.', date:'2025-03-12'},
+    ]
+  },
+  {
+    id:'a6', name:'Troupe Imaginaria', icon:'🎭', category:'Teatro', subcategory:'Sketch Cómico',
+    province:'San José', district:'Tibás', members:6, verified:true,
+    rating:4.8, reviewCount:40, basePrice:95000,
+    bannerGradient:'linear-gradient(135deg,#e8f0fa,#d5e4f5)',
+    about:'Grupo de teatro de improvisación y sketches cómicos. Presentaciones interactivas y personalizadas para cada tipo de evento. Creamos situaciones divertidas involucrando al público.',
+    services:[
+      {name:'Show de improvisación (60 min)',desc:'Teatro espontáneo con el público',price:200000},
+      {name:'Sketches corporativos (45 min)',desc:'Piezas personalizadas con temática de empresa',price:160000},
+      {name:'Obra infantil (30 min)',desc:'Teatro interactivo para niños',price:90000},
+    ],
+    conditions:['Escenario o área plana de 5m×4m','Sillas para el público','Micrófono inalámbrico (2)','Personajes y guion personalizables con 2 semanas de antelación'],
+    genres:['Teatro','Improvisación','Sketch','Comedia'],
+    contact:{phone:'+506 8411-7700',email:'troupeimaginaria@gmail.com',web:'instagram.com/troupeimaginaria'},
+    achievements:['🏆 Premio Escena CR 2024','🎭 Festival Teatro Nacional 2023','🌟 +150 presentaciones'],
+    reviews:[
+      {author:'CCSS Corporativo', rating:5, text:'Personalizaron los sketches con nuestros valores empresariales. Excelente.', date:'2025-05-01'},
+      {author:'Escuela La Paz', rating:5, text:'Los niños amaron el show. Muy creativos y divertidos.', date:'2025-01-28'},
+    ]
+  },
+];
+
+function initDB() {
+  if (!DB.get('artists')) DB.set('artists', DEFAULT_ARTISTS);
+  if (!DB.get('bookings')) DB.set('bookings', []);
+  if (!DB.get('users')) DB.set('users', []);
+  if (!DB.get('messages')) DB.set('messages', []);
+  if (!DB.get('favorites')) DB.set('favorites', []);
+  if (!DB.get('session')) DB.set('session', null);
+}
+
+/* ─── State ─── */
+let currentArtistId = null;
+let bookingData = {};
+let dashCalDate = new Date();
+let currentRegTab = 0;
+let regServices = [];
+let regConditions = [];
+let selectedStars = 0;
+let currentDashPanel = 'resumen';
+
+/* ═══════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════ */
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+  updateNavHighlight(name);
+  if (name==='home') refreshHomeStats();
+  if (name==='explore') renderExplore();
+  if (name==='dashboard') { requireAuth(()=>{ renderDashboard(); }); return; }
+}
+
+function updateNavHighlight(name) {
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active-link'));
+  if(name==='home') document.querySelectorAll('.nav-link')[0].classList.add('active-link');
+  if(name==='explore') document.querySelectorAll('.nav-link')[1].classList.add('active-link');
+}
+
+function requireAuth(cb) {
+  const session = DB.get('session');
+  if (!session) { openModal('auth-modal'); return; }
+  cb();
+}
+
+function filterAndGo(cat) {
+  document.getElementById('search-cat').value = cat;
+  document.getElementById('search-input').value = '';
+  showPage('explore');
+  doSearch();
+}
+
+/* ═══════════════════════════════════
+   AUTH
+═══════════════════════════════════ */
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function switchAuthView(view) {
+  document.getElementById('auth-login-view').style.display = view==='login'?'block':'none';
+  document.getElementById('auth-register-view').style.display = view==='register'?'block':'none';
+}
+
+function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  if (!email||!pass) { toast('Completa todos los campos','error'); return; }
+  const users = DB.get('users',[]);
+  const user = users.find(u=>u.email===email&&u.password===pass);
+  if (!user) { toast('Credenciales incorrectas','error'); return; }
+  DB.set('session', user);
+  updateAuthUI(user);
+  closeModal('auth-modal');
+  toast('¡Bienvenido, '+user.name+'!','success');
+  // If logged user is an artist go to dashboard
+  if (user.type==='artist') { renderDashboard(); showPage('dashboard'); }
+}
+
+function handleRegister() {
+  const nombre = document.getElementById('reg-nombre').value.trim();
+  const apellido = document.getElementById('reg-apellido').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  if (!nombre||!apellido||!email||!pass) { toast('Completa todos los campos','error'); return; }
+  const users = DB.get('users',[]);
+  if (users.find(u=>u.email===email)) { toast('Ese correo ya está registrado','error'); return; }
+  const user = {id:'u'+Date.now(), name:nombre+' '+apellido, email, password:pass, type:'client', created:new Date().toISOString()};
+  users.push(user);
+  DB.set('users', users);
+  DB.set('session', user);
+  updateAuthUI(user);
+  closeModal('auth-modal');
+  toast('¡Cuenta creada! Bienvenido, '+nombre+'','success');
+}
+
+function handleLogout() {
+  DB.set('session',null);
+  updateAuthUI(null);
+  showPage('home');
+  toast('Sesión cerrada');
+}
+
+function updateAuthUI(user) {
+  const authBtns = document.getElementById('nav-auth-btns');
+  const userBtns = document.getElementById('nav-user-btns');
+  const username = document.getElementById('nav-username');
+  if (user) {
+    authBtns.style.display='none';
+    userBtns.style.display='flex';
+    username.textContent = user.name;
+  } else {
+    authBtns.style.display='flex';
+    userBtns.style.display='none';
+  }
+}
+
+/* ═══════════════════════════════════
+   HOME
+═══════════════════════════════════ */
+function refreshHomeStats() {
+  const artists = DB.get('artists',[]);
+  const bookings = DB.get('bookings',[]);
+  document.getElementById('stat-artists').textContent = (1200+artists.length-6)+'+';
+  document.getElementById('stat-bookings').textContent = (3800+bookings.length)+'+';
+  renderFeatured();
+}
+
+function renderFeatured() {
+  const artists = DB.get('artists',[]);
+  const top = [...artists].sort((a,b)=>b.rating-a.rating).slice(0,4);
+  document.getElementById('featured-grid').innerHTML = top.map(a=>artistCardHTML(a)).join('');
+}
+
+/* ═══════════════════════════════════
+   EXPLORE
+═══════════════════════════════════ */
+function renderExplore(filter={}) {
+  let artists = DB.get('artists',[]);
+  const q = (document.getElementById('search-input').value||'').toLowerCase();
+  const cat = document.getElementById('search-cat').value;
+  let filtered = artists;
+  if (q) filtered = filtered.filter(a =>
+    a.name.toLowerCase().includes(q)||
+    a.category.toLowerCase().includes(q)||
+    a.subcategory.toLowerCase().includes(q)||
+    a.about.toLowerCase().includes(q)||
+    a.province.toLowerCase().includes(q)
+  );
+  if (cat) filtered = filtered.filter(a=>a.category===cat);
+  const grid = document.getElementById('artists-grid');
+  const empty = document.getElementById('explore-empty');
+  const label = document.getElementById('search-results-label');
+  if (filtered.length===0) {
+    grid.innerHTML=''; empty.style.display='block';
+    label.textContent='';
+  } else {
+    empty.style.display='none';
+    label.textContent = `Mostrando ${filtered.length} artista${filtered.length!==1?'s':''}`+(q||cat?' (filtrado)':'');
+    grid.innerHTML = filtered.map(a=>artistCardHTML(a)).join('');
+  }
+}
+
+function doSearch() {
+  renderExplore();
+}
+
+function artistCardHTML(a) {
+  const stars = '★'.repeat(Math.floor(a.rating))+'☆'.repeat(5-Math.floor(a.rating));
+  return `<div class="artist-card" onclick="openProfile('${a.id}')">
+    <div class="artist-banner" style="background:${a.bannerGradient||'var(--bg)'}">${a.icon}</div>
+    <div class="artist-body">
+      <div class="artist-type">${a.category}${a.subcategory?' · '+a.subcategory:''}</div>
+      <div class="artist-name">${a.name}</div>
+      <div class="artist-desc">${a.about.substring(0,100)}…</div>
+      <div class="artist-footer">
+        <span class="rating">${stars} <span class="count">(${a.reviewCount})</span></span>
+        <span class="price">Desde ₡${(a.basePrice||0).toLocaleString('es-CR')}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+// Live search
+document.getElementById('search-input').addEventListener('input', doSearch);
+document.getElementById('search-cat').addEventListener('change', doSearch);
+
+/* ═══════════════════════════════════
+   ARTIST PROFILE
+═══════════════════════════════════ */
+function openProfile(id) {
+  currentArtistId = id;
+  const artists = DB.get('artists',[]);
+  const a = artists.find(x=>x.id===id);
+  if (!a) return;
+
+  document.getElementById('profile-avatar').textContent = a.icon;
+  document.getElementById('profile-name').textContent = a.name;
+  document.getElementById('profile-badge').textContent = `${a.category} · ${a.subcategory||''}`;
+  document.getElementById('profile-loc').innerHTML = `📍 <strong>${a.province}</strong>`;
+  document.getElementById('profile-rating').textContent = a.rating.toFixed(1);
+  document.getElementById('profile-reviews-count').textContent = (a.reviews||[]).length;
+  document.getElementById('profile-members').innerHTML = `🎵 <strong>${a.members} integrante${a.members>1?'s':''}</strong>`;
+  document.getElementById('profile-verified').innerHTML = a.verified?`<span style="color:var(--accent);font-weight:600">✅ Verificado</span>`:'';
+  document.getElementById('profile-about').textContent = a.about;
+
+  // Services
+  const svcEl = document.getElementById('profile-services');
+  svcEl.innerHTML = (a.services||[]).map(s=>`
+    <div class="service-item">
+      <div><div class="service-name">${s.name}</div><div class="service-desc">${s.desc||''}</div></div>
+      <div class="service-price">₡${(s.price||0).toLocaleString('es-CR')}</div>
+    </div>`).join('');
+
+  // Conditions
+  document.getElementById('profile-conditions').innerHTML = (a.conditions||[]).map(c=>`<li style="list-style:none;padding:4px 0;color:var(--ink-2);font-size:.85rem">· ${c}</li>`).join('');
+
+  // Genres
+  document.getElementById('profile-genres').innerHTML = (a.genres||[]).map(g=>`<span class="chip selected" style="cursor:default">${g}</span>`).join('');
+
+  // Reviews
+  renderProfileReviews(a);
+
+  // Contact
+  const c = a.contact||{};
+  document.getElementById('profile-contact').innerHTML = `
+    <div class="contact-row"><span class="icon">📱</span>${c.phone||'—'}</div>
+    <div class="contact-row"><span class="icon">✉️</span>${c.email||'—'}</div>
+    ${c.web?`<div class="contact-row"><span class="icon">🌐</span>${c.web}</div>`:''}
+    <div class="contact-row"><span class="icon">📍</span>${a.province}</div>`;
+
+  // Achievements
+  if ((a.achievements||[]).length) {
+    document.getElementById('profile-achievements').innerHTML = a.achievements.map(ach=>`
+      <div class="achievement"><span class="ach-icon">${ach.split(' ')[0]}</span><span class="ach-label">${ach.split(' ').slice(1).join(' ')}</span></div>`).join('');
+    document.getElementById('profile-achievements-widget').style.display='block';
+  } else {
+    document.getElementById('profile-achievements-widget').style.display='none';
   }
 
-  function goStep(n) {
-    document.getElementById('step1').style.display = 'none';
-    document.getElementById('step2').style.display = 'none';
-    document.getElementById('step3').style.display = 'none';
-    document.getElementById('step-success').style.display = 'none';
+  // Calendar
+  renderProfileCalendar();
 
-    ['step1-tab','step2-tab','step3-tab'].forEach((id,i) => {
-      document.getElementById(id).className = 'step' + (i < n - 1 ? ' done' : i === n - 1 ? ' active' : '');
-    });
+  // Favorites button
+  const favs = DB.get('favorites',[]);
+  document.getElementById('fav-btn').textContent = favs.includes(id)?'♥ Favorito':'♡ Favorito';
 
-    if (n === 'success') {
-      document.getElementById('step-success').style.display = 'block';
-      ['step1-tab','step2-tab','step3-tab'].forEach(id => {
-        document.getElementById(id).className = 'step done';
-      });
-    } else {
-      document.getElementById('step' + n).style.display = 'block';
-    }
+  // Review star setup
+  selectedStars = 0;
+  renderStars(0);
+  document.getElementById('review-text').value='';
+  const session = DB.get('session');
+  document.getElementById('review-login-note').textContent = session?'':'Inicia sesión para dejar una reseña.';
+
+  // Populate booking services
+  const svcSelect = document.getElementById('b-servicio');
+  svcSelect.innerHTML = '<option value="">Seleccionar...</option>' +
+    (a.services||[]).map(s=>`<option value="${s.price}">${s.name} — ₡${(s.price||0).toLocaleString('es-CR')}</option>`).join('');
+
+  showPage('profile');
+}
+
+function renderProfileReviews(a) {
+  const list = document.getElementById('profile-reviews-list');
+  const reviews = a.reviews||[];
+  if (!reviews.length) { list.innerHTML='<p style="color:var(--ink-3);font-size:.875rem">Aún no hay reseñas.</p>'; return; }
+  list.innerHTML = reviews.map(r=>`
+    <div class="review-item">
+      <div class="review-header">
+        <div class="reviewer-name">${r.author} <span style="color:var(--gold)">${'★'.repeat(r.rating)}</span></div>
+        <div class="review-date">${r.date}</div>
+      </div>
+      <div class="review-text">${r.text}</div>
+    </div>`).join('');
+}
+
+// Star rating interaction
+document.getElementById('star-rating').addEventListener('mouseover', e=>{
+  if(e.target.classList.contains('star')) renderStars(+e.target.dataset.val);
+});
+document.getElementById('star-rating').addEventListener('mouseout', ()=>renderStars(selectedStars));
+document.getElementById('star-rating').addEventListener('click', e=>{
+  if(e.target.classList.contains('star')){ selectedStars=+e.target.dataset.val; renderStars(selectedStars); }
+});
+function renderStars(n) {
+  document.querySelectorAll('#star-rating .star').forEach((s,i)=>{
+    s.textContent = i<n?'★':'☆';
+    s.style.color = i<n?'var(--gold)':'var(--ink-3)';
+  });
+}
+
+function submitReview() {
+  const session = DB.get('session');
+  if (!session) { openModal('auth-modal'); return; }
+  if (!selectedStars) { toast('Selecciona una calificación','error'); return; }
+  const text = document.getElementById('review-text').value.trim();
+  if (!text) { toast('Escribe un comentario','error'); return; }
+  const artists = DB.get('artists',[]);
+  const idx = artists.findIndex(a=>a.id===currentArtistId);
+  if (idx===-1) return;
+  const review = {author:session.name, rating:selectedStars, text, date:new Date().toLocaleDateString('es-CR')};
+  artists[idx].reviews = [...(artists[idx].reviews||[]), review];
+  // Update rating
+  const allR = artists[idx].reviews;
+  artists[idx].rating = +(allR.reduce((s,r)=>s+r.rating,0)/allR.length).toFixed(1);
+  artists[idx].reviewCount = allR.length;
+  DB.set('artists', artists);
+  renderProfileReviews(artists[idx]);
+  document.getElementById('profile-rating').textContent = artists[idx].rating.toFixed(1);
+  document.getElementById('profile-reviews-count').textContent = allR.length;
+  selectedStars=0; renderStars(0);
+  document.getElementById('review-text').value='';
+  toast('Reseña publicada','success');
+}
+
+function toggleFavorite() {
+  const favs = DB.get('favorites',[]);
+  const idx = favs.indexOf(currentArtistId);
+  if (idx===-1) { favs.push(currentArtistId); toast('Agregado a favoritos','success'); }
+  else { favs.splice(idx,1); toast('Quitado de favoritos'); }
+  DB.set('favorites', favs);
+  document.getElementById('fav-btn').textContent = favs.includes(currentArtistId)?'♥ Favorito':'♡ Favorito';
+}
+
+/* Calendar */
+function renderProfileCalendar() {
+  const now = new Date();
+  renderCalendar(now, 'profile-calendar', false);
+}
+
+function renderCalendar(date, containerId, editable) {
+  const year = date.getFullYear(), month = date.getMonth();
+  const monthNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const firstDay = new Date(year,month,1).getDay();
+  const daysInMonth = new Date(year,month+1,0).getDate();
+  const today = new Date();
+
+  // Get booked dates from bookings for this artist
+  const bookings = DB.get('bookings',[]);
+  const bookedDates = new Set(
+    bookings.filter(b=>b.artistId===currentArtistId&&b.status!=='cancelled')
+      .map(b=>b.fecha)
+  );
+
+  let html = `<div class="cal-nav">
+    ${editable?`<button class="cal-nav-btn" onclick="dashCalPrev()">‹</button>`:''}
+    <div class="cal-month">${monthNames[month]} ${year}</div>
+    ${editable?`<button class="cal-nav-btn" onclick="dashCalNext()">›</button>`:''}
+  </div>
+  <div class="cal-grid">
+    <div class="cal-day cal-header">D</div><div class="cal-day cal-header">L</div>
+    <div class="cal-day cal-header">M</div><div class="cal-day cal-header">X</div>
+    <div class="cal-day cal-header">J</div><div class="cal-day cal-header">V</div>
+    <div class="cal-day cal-header">S</div>`;
+  for(let i=0;i<firstDay;i++) html+=`<div class="cal-day cal-empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=(today.getDate()===d&&today.getMonth()===month&&today.getFullYear()===year);
+    const isBooked=bookedDates.has(dateStr);
+    html+=`<div class="cal-day ${isBooked?'cal-booked':'cal-available'} ${isToday?'cal-today':''}">${d}</div>`;
   }
+  html+=`</div><div class="cal-legend"><span><div class="dot" style="background:var(--accent)"></div>Disponible</span><span><div class="dot" style="background:var(--warm)"></div>Ocupado</span></div>`;
+  document.getElementById(containerId).innerHTML=html;
+}
+
+/* ═══════════════════════════════════
+   BOOKING FORM
+═══════════════════════════════════ */
+function goToBooking() {
+  const session = DB.get('session');
+  if (session) {
+    document.getElementById('b-nombre').value = session.name.split(' ')[0]||'';
+    document.getElementById('b-apellido').value = session.name.split(' ').slice(1).join(' ')||'';
+    document.getElementById('b-email').value = session.email||'';
+  }
+  const artists = DB.get('artists',[]);
+  const a = artists.find(x=>x.id===currentArtistId);
+  document.getElementById('booking-artist-name').textContent = a?a.name:'—';
+  goBookingStep(1);
+  showPage('contratar');
+}
+
+function goBookingStep(n) {
+  ['bstep1','bstep2','bstep3','bstep-success'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  ['bstep1-tab','bstep2-tab','bstep3-tab'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.className='step'+(i<n-1?' done':i===n-1?' active':'');
+  });
+
+  if(n==='success'){
+    document.getElementById('bstep-success').style.display='block';
+    ['bstep1-tab','bstep2-tab','bstep3-tab'].forEach(id=>document.getElementById(id).className='step done');
+    return;
+  }
+
+  if(n===2&&!validateBookingStep1()) return;
+  if(n===3&&!validateBookingStep2()) { goBookingStep(2); return; }
+  if(n===3) buildBookingSummary();
+
+  document.getElementById('bstep'+n).style.display='block';
+}
+
+function validateBookingStep1() {
+  let ok=true;
+  const fields=[['b-nombre','err-b-nombre',v=>v.trim()],['b-apellido','err-b-apellido',v=>v.trim()],['b-email','err-b-email',v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)],['b-tel','err-b-tel',v=>v.trim()]];
+  fields.forEach(([id,eid,check])=>{
+    const el=document.getElementById(id); const err=document.getElementById(eid);
+    const valid=check(el.value);
+    el.classList.toggle('invalid',!valid); err.style.display=valid?'none':'block'; if(!valid) ok=false;
+  });
+  return ok;
+}
+function validateBookingStep2() {
+  let ok=true;
+  const fields=[['b-tipo','err-b-tipo',v=>v],['b-fecha','err-b-fecha',v=>v],['b-lugar','err-b-lugar',v=>v.trim()],['b-servicio','err-b-servicio',v=>v]];
+  fields.forEach(([id,eid,check])=>{
+    const el=document.getElementById(id); const err=document.getElementById(eid);
+    const valid=!!check(el.value);
+    el.classList.toggle('invalid',!valid); err.style.display=valid?'none':'block'; if(!valid) ok=false;
+  });
+  return ok;
+}
+
+function buildBookingSummary() {
+  const svcEl=document.getElementById('b-servicio');
+  const svcText=svcEl.options[svcEl.selectedIndex].text;
+  const svcPrice=+svcEl.value||0;
+  const fechaRaw=document.getElementById('b-fecha').value;
+  const fecha=fechaRaw?new Date(fechaRaw+'T12:00').toLocaleDateString('es-CR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'—';
+  bookingData={
+    nombre:document.getElementById('b-nombre').value.trim()+' '+document.getElementById('b-apellido').value.trim(),
+    email:document.getElementById('b-email').value.trim(),
+    tel:document.getElementById('b-tel').value.trim(),
+    empresa:document.getElementById('b-empresa').value.trim(),
+    tipo:document.getElementById('b-tipo').value,
+    fecha:fechaRaw, fechaDisplay:fecha,
+    hora:document.getElementById('b-hora').value,
+    lugar:document.getElementById('b-lugar').value.trim(),
+    servicio:svcText, precio:svcPrice,
+    notas:document.getElementById('b-notas').value.trim(),
+    artistId:currentArtistId,
+    status:'pending', id:'b'+Date.now()
+  };
+  const adelanto=Math.round(svcPrice*0.5);
+  document.getElementById('booking-summary').innerHTML=`
+    <div class="summary-row"><span class="key">Artista</span><span class="val">${document.getElementById('booking-artist-name').textContent}</span></div>
+    <div class="summary-row"><span class="key">Cliente</span><span class="val">${bookingData.nombre}</span></div>
+    ${bookingData.empresa?`<div class="summary-row"><span class="key">Empresa</span><span class="val">${bookingData.empresa}</span></div>`:''}
+    <div class="summary-row"><span class="key">Evento</span><span class="val">${bookingData.tipo}</span></div>
+    <div class="summary-row"><span class="key">Fecha</span><span class="val">${bookingData.fechaDisplay}</span></div>
+    <div class="summary-row"><span class="key">Hora</span><span class="val">${bookingData.hora}</span></div>
+    <div class="summary-row"><span class="key">Lugar</span><span class="val">${bookingData.lugar}</span></div>
+    <div class="summary-row"><span class="key">Servicio</span><span class="val">${bookingData.servicio}</span></div>
+    ${bookingData.notas?`<div class="summary-row"><span class="key">Notas</span><span class="val">${bookingData.notas}</span></div>`:''}
+    <div class="divider"></div>
+    <div class="summary-row summary-total"><span class="key">Total</span><span class="val">₡${svcPrice.toLocaleString('es-CR')}</span></div>
+    <div class="summary-row"><span class="key">Adelanto (50%)</span><span class="val">₡${adelanto.toLocaleString('es-CR')}</span></div>`;
+}
+
+function submitBooking() {
+  const bookings = DB.get('bookings',[]);
+  bookings.push({...bookingData, created:new Date().toISOString()});
+  DB.set('bookings', bookings);
+  // Auto message to artist
+  const msgs = DB.get('messages',[]);
+  msgs.push({id:'m'+Date.now(), from:bookingData.nombre, to:'artist:'+currentArtistId, text:`Nueva solicitud de ${bookingData.nombre} para ${bookingData.tipo} el ${bookingData.fechaDisplay}. Servicio: ${bookingData.servicio}.`, time:new Date().toISOString(), read:false});
+  DB.set('messages', msgs);
+  goBookingStep('success');
+}
+
+/* ═══════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════ */
+function renderDashboard() {
+  const session = DB.get('session');
+  if (!session) return;
+
+  // Artist info - find artist profile owned by this user
+  const artists = DB.get('artists',[]);
+  let myArtist = artists.find(a=>a.ownerEmail===session.email);
+  // For demo, if no artist linked, link first one to the session
+  if (!myArtist && session.type==='artist') myArtist = artists[0];
+
+  document.getElementById('dash-artist-name').textContent = myArtist?myArtist.name:session.name;
+  document.getElementById('dash-artist-sub').textContent = myArtist?`★ ${myArtist.rating.toFixed(1)} · Verificado`:'Cliente';
+
+  const bookings = DB.get('bookings',[]);
+  const myBookings = myArtist ? bookings.filter(b=>b.artistId===myArtist.id) : bookings;
+  const confirmed = myBookings.filter(b=>b.status==='confirmed');
+  const pending = myBookings.filter(b=>b.status==='pending');
+  const income = confirmed.reduce((s,b)=>s+(b.precio||0),0);
+
+  // KPIs
+  document.getElementById('dash-kpis').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Solicitudes pendientes</div><div class="kpi-val">${pending.length}</div><div class="kpi-change">↑ Este mes</div></div>
+    <div class="kpi"><div class="kpi-label">Shows confirmados</div><div class="kpi-val">${confirmed.length}</div><div class="kpi-change">↑ Total</div></div>
+    <div class="kpi"><div class="kpi-label">Ingresos totales</div><div class="kpi-val">₡${(income/1000).toFixed(0)}K</div><div class="kpi-change">↑ Acumulado</div></div>
+    <div class="kpi"><div class="kpi-label">Reseñas</div><div class="kpi-val">${myArtist?myArtist.reviews.length:0}</div><div class="kpi-change">Promedio ★${myArtist?myArtist.rating.toFixed(1):'—'}</div></div>`;
+
+  // Requests table
+  renderRequestsTable(myBookings, 'dash-requests-body', 3);
+  renderRequestsTable(myBookings, 'all-requests-body');
+
+  // Messages
+  const msgs = DB.get('messages',[]);
+  const myMsgs = myArtist ? msgs.filter(m=>m.to==='artist:'+myArtist.id||m.from===myArtist.name) : msgs;
+  const unread = myMsgs.filter(m=>!m.read).length;
+  const badge = document.getElementById('unread-badge');
+  if (unread>0) { badge.style.display='inline-flex'; badge.textContent=unread; }
+  else badge.style.display='none';
+
+  document.getElementById('dash-messages-list').innerHTML = myMsgs.length?myMsgs.map(m=>`
+    <div class="msg-item ${m.read?'':'unread'}" onclick="markRead('${m.id}')">
+      <div class="msg-avatar">👤</div>
+      <div style="flex:1;min-width:0">
+        <div class="msg-name">${m.from}</div>
+        <div class="msg-preview">${m.text}</div>
+      </div>
+      <div class="msg-time">${new Date(m.time).toLocaleDateString('es-CR')}</div>
+    </div>`).join('')
+    :`<div class="msg-item"><div style="color:var(--ink-3);font-size:.875rem;padding:8px">No hay mensajes.</div></div>`;
+
+  // Reviews
+  const reviews = myArtist?(myArtist.reviews||[]):[];
+  document.getElementById('dash-reviews-list').innerHTML = reviews.length?
+    reviews.map(r=>`<div class="review-item"><div class="review-header"><div class="reviewer-name">${r.author} <span style="color:var(--gold)">${'★'.repeat(r.rating)}</span></div><div class="review-date">${r.date}</div></div><div class="review-text">${r.text}</div></div>`).join(''):
+    '<p style="color:var(--ink-3);font-size:.875rem">Aún no hay reseñas.</p>';
+
+  // Services
+  renderDashServices(myArtist);
+
+  // Profile form
+  if (myArtist) {
+    document.getElementById('dp-nombre').value=myArtist.name;
+    document.getElementById('dp-integrantes').value=myArtist.members;
+    document.getElementById('dp-categoria').value=myArtist.category;
+    document.getElementById('dp-provincia').value=myArtist.province;
+    document.getElementById('dp-desc').value=myArtist.about;
+    document.getElementById('dp-email').value=(myArtist.contact||{}).email||'';
+    document.getElementById('dp-tel').value=(myArtist.contact||{}).phone||'';
+    document.getElementById('dp-web').value=(myArtist.contact||{}).web||'';
+  }
+
+  // Calendar
+  dashCalDate = new Date();
+  currentArtistId = myArtist?myArtist.id:null;
+  renderDashCalendar();
+
+  // Agenda
+  const upcoming = confirmed.filter(b=>new Date(b.fecha)>=new Date()).sort((a,b)=>new Date(a.fecha)-new Date(b.fecha));
+  document.getElementById('dash-agenda-list').innerHTML = upcoming.length?
+    upcoming.map(b=>`<div class="card card-padded" style="margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div><div style="font-weight:600;font-size:.9rem">${b.tipo}</div><div style="font-size:.8rem;color:var(--ink-2)">${b.nombre} · ${b.lugar}</div></div>
+      <div style="text-align:right"><div style="font-size:.9rem;font-weight:600;color:var(--accent)">${new Date(b.fecha+'T12:00').toLocaleDateString('es-CR')}</div><div style="font-size:.78rem;color:var(--ink-3)">${b.hora}</div></div>
+    </div>`).join(''):
+    '<p style="color:var(--ink-3);font-size:.875rem">No hay eventos confirmados próximos.</p>';
+}
+
+function renderRequestsTable(bookings, tbodyId, limit) {
+  const list = limit?bookings.slice(-limit).reverse():bookings.slice().reverse();
+  const tbody = document.getElementById(tbodyId);
+  if (!list.length) {
+    tbody.innerHTML=`<tr><td colspan="7" style="color:var(--ink-3);font-size:.875rem;text-align:center;padding:24px">No hay solicitudes aún.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(b=>`
+    <tr>
+      <td><strong>${b.nombre}</strong><br><span style="font-size:.75rem;color:var(--ink-3)">${b.tipo}</span></td>
+      <td>${b.tipo}</td>
+      <td>${b.fecha?new Date(b.fecha+'T12:00').toLocaleDateString('es-CR'):'-'}</td>
+      <td style="max-width:140px">${(b.servicio||'').split('—')[0].trim()}</td>
+      <td style="color:var(--accent);font-weight:600">₡${(b.precio||0).toLocaleString('es-CR')}</td>
+      <td>${statusBadge(b.status)}</td>
+      <td>
+        ${b.status==='pending'?`<button class="btn btn-primary btn-sm" onclick="updateBookingStatus('${b.id}','confirmed')">Aceptar</button> <button class="btn btn-danger btn-sm" onclick="updateBookingStatus('${b.id}','cancelled')">Rechazar</button>`:''}
+        ${b.status==='confirmed'?`<button class="btn btn-outline btn-sm" onclick="updateBookingStatus('${b.id}','done')">Marcar realizado</button>`:''}
+      </td>
+    </tr>`).join('');
+}
+
+function statusBadge(s) {
+  const map={pending:'badge-pending',confirmed:'badge-confirmed',done:'badge-done',cancelled:'badge-cancelled'};
+  const label={pending:'Pendiente',confirmed:'Confirmado',done:'Realizado',cancelled:'Cancelado'};
+  return `<span class="badge ${map[s]||''}">${label[s]||s}</span>`;
+}
+
+function updateBookingStatus(id, status) {
+  const bookings = DB.get('bookings',[]);
+  const idx = bookings.findIndex(b=>b.id===id);
+  if(idx===-1) return;
+  bookings[idx].status=status;
+  DB.set('bookings',bookings);
+  renderDashboard();
+  toast(status==='confirmed'?'Solicitud confirmada':status==='done'?'Marcado como realizado':'Solicitud rechazada', status==='cancelled'?'error':'success');
+}
+
+function renderDashServices(myArtist) {
+  const svcEl=document.getElementById('dash-services-list');
+  if(!myArtist||!myArtist.services.length){ svcEl.innerHTML='<p style="color:var(--ink-3);font-size:.875rem">No has agregado servicios aún.</p>'; return; }
+  svcEl.innerHTML=myArtist.services.map((s,i)=>`
+    <div class="service-item">
+      <div><div class="service-name">${s.name}</div><div class="service-desc">${s.desc||''}</div></div>
+      <div style="display:flex;align-items:center;gap:12px"><span class="service-price">₡${(s.price||0).toLocaleString('es-CR')}</span>
+      <button class="btn btn-danger btn-sm" onclick="removeService(${i})">×</button></div>
+    </div>`).join('');
+}
+
+function addService() {
+  const name=document.getElementById('svc-name').value.trim();
+  const price=+document.getElementById('svc-price').value;
+  const desc=document.getElementById('svc-desc').value.trim();
+  if(!name||!price){ toast('Completa nombre y precio','error'); return; }
+  const artists=DB.get('artists',[]);
+  const session=DB.get('session');
+  let myArtist=artists.find(a=>a.ownerEmail===session.email)||artists[0];
+  const idx=artists.findIndex(a=>a.id===myArtist.id);
+  artists[idx].services.push({name,price,desc});
+  DB.set('artists',artists);
+  // Update booking selector
+  openProfile(myArtist.id); // refresh profile data
+  currentArtistId=myArtist.id;
+  renderDashServices(artists[idx]);
+  document.getElementById('svc-name').value='';
+  document.getElementById('svc-price').value='';
+  document.getElementById('svc-desc').value='';
+  toast('Servicio agregado','success');
+}
+
+function removeService(i) {
+  const artists=DB.get('artists',[]);
+  const session=DB.get('session');
+  let myArtist=artists.find(a=>a.ownerEmail===session.email)||artists[0];
+  const idx=artists.findIndex(a=>a.id===myArtist.id);
+  artists[idx].services.splice(i,1);
+  DB.set('artists',artists);
+  renderDashServices(artists[idx]);
+  toast('Servicio eliminado');
+}
+
+function sendMessage() {
+  const to=document.getElementById('msg-to').value.trim();
+  const body=document.getElementById('msg-body').value.trim();
+  if(!to||!body){ toast('Completa todos los campos','error'); return; }
+  const session=DB.get('session');
+  const msgs=DB.get('messages',[]);
+  msgs.push({id:'m'+Date.now(), from:session.name, to, text:body, time:new Date().toISOString(), read:true});
+  DB.set('messages',msgs);
+  document.getElementById('msg-to').value='';
+  document.getElementById('msg-body').value='';
+  renderDashboard();
+  toast('Mensaje enviado','success');
+}
+
+function markRead(id) {
+  const msgs=DB.get('messages',[]);
+  const idx=msgs.findIndex(m=>m.id===id);
+  if(idx!==-1){ msgs[idx].read=true; DB.set('messages',msgs); renderDashboard(); }
+}
+
+function saveProfile() {
+  const artists=DB.get('artists',[]);
+  const session=DB.get('session');
+  let myArtist=artists.find(a=>a.ownerEmail===session.email)||artists[0];
+  const idx=artists.findIndex(a=>a.id===myArtist.id);
+  artists[idx].name=document.getElementById('dp-nombre').value.trim()||artists[idx].name;
+  artists[idx].members=+document.getElementById('dp-integrantes').value||artists[idx].members;
+  artists[idx].category=document.getElementById('dp-categoria').value;
+  artists[idx].province=document.getElementById('dp-provincia').value;
+  artists[idx].about=document.getElementById('dp-desc').value.trim();
+  artists[idx].contact={
+    email:document.getElementById('dp-email').value.trim(),
+    phone:document.getElementById('dp-tel').value.trim(),
+    web:document.getElementById('dp-web').value.trim()
+  };
+  DB.set('artists',artists);
+  document.getElementById('dash-artist-name').textContent=artists[idx].name;
+  toast('Perfil actualizado','success');
+}
+
+function switchDashPanel(name) {
+  document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  document.querySelectorAll('.dash-nav-item').forEach(el=>el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  currentDashPanel=name;
+}
+
+/* Dashboard Calendar */
+function renderDashCalendar() {
+  renderCalendar(dashCalDate, 'dash-cal-grid'.replace('-grid',''), true);
+  // Build manually since container is different
+  const year=dashCalDate.getFullYear(), month=dashCalDate.getMonth();
+  const monthNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('dash-cal-month').textContent=`${monthNames[month]} ${year}`;
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const today=new Date();
+  const bookings=DB.get('bookings',[]);
+  const bookedDates=new Set(bookings.filter(b=>b.artistId===currentArtistId&&b.status!=='cancelled').map(b=>b.fecha));
+  let html='<div class="cal-day cal-header">D</div><div class="cal-day cal-header">L</div><div class="cal-day cal-header">M</div><div class="cal-day cal-header">X</div><div class="cal-day cal-header">J</div><div class="cal-day cal-header">V</div><div class="cal-day cal-header">S</div>';
+  for(let i=0;i<firstDay;i++) html+=`<div class="cal-day"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isT=(today.getDate()===d&&today.getMonth()===month&&today.getFullYear()===year);
+    const isB=bookedDates.has(ds);
+    html+=`<div class="cal-day ${isB?'cal-booked':'cal-available'} ${isT?'cal-today':''}">${d}</div>`;
+  }
+  document.getElementById('dash-cal-grid').innerHTML=html;
+}
+function dashCalPrev(){ dashCalDate.setMonth(dashCalDate.getMonth()-1); renderDashCalendar(); }
+function dashCalNext(){ dashCalDate.setMonth(dashCalDate.getMonth()+1); renderDashCalendar(); }
+
+/* ═══════════════════════════════════
+   ARTIST REGISTRATION
+═══════════════════════════════════ */
+function switchRegTab(i) {
+  currentRegTab=i;
+  document.querySelectorAll('.reg-tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
+  document.querySelectorAll('#page-register [id^="reg-tab-"]').forEach((t,idx)=>t.style.display=idx===i?'block':'none');
+}
+
+function addRegService() {
+  const name=document.getElementById('rs-name').value.trim();
+  const price=+document.getElementById('rs-price').value;
+  const desc=document.getElementById('rs-desc').value.trim();
+  if(!name||!price){ toast('Nombre y precio requeridos','error'); return; }
+  regServices.push({name,price,desc});
+  document.getElementById('rs-name').value='';
+  document.getElementById('rs-price').value='';
+  document.getElementById('rs-desc').value='';
+  renderRegServices();
+}
+
+function renderRegServices() {
+  document.getElementById('reg-services').innerHTML=regServices.map((s,i)=>`
+    <div class="service-item"><div><div class="service-name">${s.name}</div></div>
+    <div style="display:flex;align-items:center;gap:10px"><span class="service-price">₡${s.price.toLocaleString('es-CR')}</span>
+    <button class="btn btn-danger btn-sm" onclick="regServices.splice(${i},1);renderRegServices()">×</button></div></div>`).join('');
+}
+
+function addRegCondition() {
+  const txt=document.getElementById('cond-input').value.trim();
+  if(!txt){ toast('Escribe una condición','error'); return; }
+  regConditions.push(txt);
+  document.getElementById('cond-input').value='';
+  document.getElementById('reg-conditions').innerHTML=regConditions.map((c,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg);border-radius:var(--r)">
+      <span style="flex:1;font-size:.875rem">· ${c}</span>
+      <button class="btn btn-danger btn-sm" onclick="regConditions.splice(${i},1);addRegCondition.__render()">×</button>
+    </div>`).join('');
+}
+addRegCondition.__render=function(){ document.getElementById('reg-conditions').innerHTML=regConditions.map((c,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg);border-radius:var(--r)"><span style="flex:1;font-size:.875rem">· ${c}</span><button class="btn btn-danger btn-sm" onclick="regConditions.splice(${i},1);addRegCondition.__render()">×</button></div>`).join(''); };
+
+function submitArtistRegister() {
+  // Validate tab 0
+  let ok=true;
+  const req=[['r-nombre','err-r-nombre',v=>v.trim()],['r-categoria','err-r-categoria',v=>v],['r-provincia','err-r-provincia',v=>v],['r-precio','err-r-precio',v=>+v>0],['r-desc','err-r-desc',v=>v.trim()],['r-email','err-r-email',v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)],['r-pass','err-r-pass',v=>v.length>=6]];
+  req.forEach(([id,eid,check])=>{
+    const el=document.getElementById(id); const err=document.getElementById(eid);
+    const valid=check(el.value);
+    el.classList.toggle('invalid',!valid); err.style.display=valid?'none':'block'; if(!valid){ ok=false; }
+  });
+  if(!ok){ switchRegTab(0); toast('Completa los campos requeridos','error'); return; }
+
+  const nombre=document.getElementById('r-nombre').value.trim();
+  const cat=document.getElementById('r-categoria').value;
+  const prov=document.getElementById('r-provincia').value;
+  const precio=+document.getElementById('r-precio').value;
+  const desc=document.getElementById('r-desc').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  const tel=document.getElementById('r-tel').value.trim();
+  const pass=document.getElementById('r-pass').value;
+  const integrantes=+document.getElementById('r-integrantes').value||1;
+  const genres=[...document.querySelectorAll('#genre-chips .chip.selected')].map(c=>c.textContent);
+
+  // Check existing email
+  const users=DB.get('users',[]);
+  if(users.find(u=>u.email===email)){ toast('Ese correo ya está registrado','error'); return; }
+
+  const bannerColors={Música:'linear-gradient(135deg,#e8f4f0,#d4ebe3)',Danza:'linear-gradient(135deg,#f5eef8,#e8d5f0)',Teatro:'linear-gradient(135deg,#e8f0fa,#d5e4f5)',Humor:'linear-gradient(135deg,#eaf4e8,#d5edd3)',Circo:'linear-gradient(135deg,#fdf3e8,#f5e5cf)','Artes Plásticas':'linear-gradient(135deg,#fceaf0,#f5d5e2)',Magia:'linear-gradient(135deg,#f0eaf8,#e2d5f5)',Percusión:'linear-gradient(135deg,#faf0e8,#f5e2d0)',Escultura:'linear-gradient(135deg,#f0f5ea,#dce8d0)'};
+  const icons={Música:'🎵',Danza:'💃',Teatro:'🎭',Humor:'🎤',Circo:'🎪','Artes Plásticas':'🖌️',Magia:'🃏',Percusión:'🥁',Escultura:'🗿',Otro:'✨'};
+
+  const newArtist={
+    id:'a'+Date.now(), name:nombre, icon:icons[cat]||'🎭',
+    category:cat, subcategory:genres.slice(0,2).join(', '),
+    province:prov, district:'', members:integrantes, verified:false,
+    rating:0, reviewCount:0, basePrice:precio,
+    bannerGradient:bannerColors[cat]||'linear-gradient(135deg,#f0f0f0,#e0e0e0)',
+    about:desc, services:regServices.length?regServices:[{name:'Servicio estándar',desc:'',price:precio}],
+    conditions:regConditions.length?regConditions:['Condiciones por acordar'],
+    genres, contact:{email, phone:tel, web:''},
+    achievements:[], reviews:[], ownerEmail:email,
+  };
+
+  const artists=DB.get('artists',[]);
+  artists.push(newArtist);
+  DB.set('artists',artists);
+
+  // Create user account
+  const user={id:'u'+Date.now(), name:nombre, email, password:pass, type:'artist', artistId:newArtist.id, created:new Date().toISOString()};
+  users.push(user);
+  DB.set('users',users);
+  DB.set('session',user);
+  updateAuthUI(user);
+
+  // Reset form
+  regServices=[]; regConditions=[];
+  ['r-nombre','r-categoria','r-provincia','r-precio','r-desc','r-email','r-tel','r-pass'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+
+  currentArtistId=newArtist.id;
+  toast('¡Perfil creado con éxito!','success');
+  renderDashboard();
+  showPage('dashboard');
+}
+
+/* ═══════════════════════════════════
+   TOAST
+═══════════════════════════════════ */
+function toast(msg, type='') {
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='show'+(type?' '+type:'');
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>{ el.className=''; },3000);
+}
+
+/* ═══════════════════════════════════
+   KEYBOARD / CLOSE MODAL ON BACKDROP
+═══════════════════════════════════ */
+document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+  overlay.addEventListener('click',e=>{ if(e.target===overlay) overlay.classList.remove('open'); });
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.modal-overlay').forEach(o=>o.classList.remove('open')); });
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+initDB();
+const savedSession=DB.get('session');
+if(savedSession) updateAuthUI(savedSession);
+refreshHomeStats();
 </script>
 </body>
 </html>
